@@ -9,15 +9,25 @@ contradict this document.
 The organizational stack is:
 
 ```text
-GOVERNANCE      BOOTSTRAP       BLUEPRINTS      LIBRARY         OPERATIONS
-   RULE     →     CONNECT    →     DEPLOY    →    EQUIP     →     OPERATE
+BOOTSTRAP       GOVERNANCE      BLUEPRINTS      LIBRARY         OPERATIONS
+ CONNECT    →      RULE     →     DEPLOY    →    EQUIP     →     OPERATE
 ```
+
+Bootstrap comes first because it is the first thing that actually happens: you
+cannot govern a tool that is not connected yet. Once Bootstrap has established
+the accounts, identities and credentials — the GitHub organization, the Azure
+subscription, the Slack workspace — Governance has something real to enforce
+onto: Azure access control, GitHub organization rules, Slack rules, and the
+authority rules for the agents that operate across all of them. Governance is
+not weaker for coming second; it is operationally effective, because its rules
+land on connected things rather than on nothing.
 
 The most important boundary statement is:
 
-> **Governance sets the rules. Bootstrap connects the organization. Blueprints
-> deploys its systems. Library equips those systems with reusable intelligence.
-> Operations composes those capabilities into actual organizational work.**
+> **Bootstrap connects the organization. Governance sets the rules and enforces
+> them onto what is connected. Blueprints deploys its systems. Library equips
+> those systems with reusable intelligence. Operations composes those
+> capabilities into actual organizational work.**
 
 Platform and Protocols form the At Bryde Ud Web3 product/protocol domain. They
 are not extra steps in the organizational stack:
@@ -27,19 +37,7 @@ are not extra steps in the organizational stack:
 
 ## Ownership model
 
-### 1. ecosystem-governance — RULE
-
-**Question: What must be true?**
-
-The highest policy authority. It owns organizational policy, AI authority and
-autonomy rules, security and secrets requirements, GitHub governance intent,
-audit and data-boundary requirements, change control, approval requirements,
-backup/recovery requirements, exception policy and break-glass policy.
-
-It defines requirements, not the technical or procedural mechanism that
-satisfies them.
-
-### 2. ecosystem-bootstrap — CONNECT
+### 1. ecosystem-bootstrap — CONNECT
 
 **Question: What does an organization need to digitally exist and connect to
 the ecosystem?**
@@ -56,6 +54,29 @@ billing, MFA and consent steps must not be bypassed through brittle automation.
 
 Bootstrap owns how credentials are referenced and how services are connected.
 Secret values never belong in Git.
+
+This layer is first because everything after it needs something that already
+exists: there is no account to govern, no system to deploy into and no service
+to operate until Bootstrap has connected it.
+
+### 2. ecosystem-governance — RULE
+
+**Question: What must be true?**
+
+The highest policy authority. It owns organizational policy, AI authority and
+autonomy rules, security and secrets requirements, GitHub governance intent,
+audit and data-boundary requirements, change control, approval requirements,
+backup/recovery requirements, exception policy and break-glass policy.
+
+It defines requirements, not the technical or procedural mechanism that
+satisfies them.
+
+It follows Bootstrap because rules are enforced onto connected things: the
+access control of an Azure subscription that exists, the organization rules of
+a GitHub organization that exists, the rules of a Slack workspace that exists,
+and the authority boundaries of the agents working across them. Its position in
+the sequence does not limit its authority — every other layer, Bootstrap
+included, operates within these requirements.
 
 ### 3. ecosystem-blueprints — DEPLOY
 
@@ -91,8 +112,8 @@ templates, Definitions of Done, approval flows, SOPs, n8n workflows,
 engineering/release/incident processes, infrastructure-request procedures,
 business workflows and human/agent handoffs.
 
-Operations composes Library capabilities running on Blueprint systems, using
-Bootstrap connections, within Governance rules.
+Operations composes Library capabilities running on Blueprint systems, within
+the Governance rules that apply to the Bootstrap connections underneath.
 
 ### 6. ecosystem-platform — WEB3 PRODUCT
 
@@ -119,8 +140,8 @@ of them.
 
 | Repository | Owns | Does not own |
 |---|---|---|
-| Governance | Policy, requirements, authority, controls, exceptions | Accounts, implementations, workflows or product code |
 | Bootstrap | Accounts, identities, provider foundations, secret references and connections | General infrastructure/runtime deployments or reusable intelligence |
+| Governance | Policy, requirements, authority, controls, exceptions | Accounts, implementations, workflows or product code |
 | Blueprints | Deployable systems, infrastructure, runtimes and technical patterns | Accounts, agent/skill content, business workflows or mandates |
 | Library | Reusable agents, skills, MCPs, tools, adapters and evals | Runtime deployment, org-specific process or policy |
 | Operations | SOPs, Plane config, n8n flows, approvals and human/agent process | Provider setup, runtime deployment or reusable component implementation |
@@ -161,8 +182,8 @@ Plane work item
   → Operations process
   → reusable agent and MCP from Library
   → executes on runtime from Blueprints
-  → uses connection from Bootstrap
   → obeys authority from Governance
+  → uses connection from Bootstrap
   → may surface status in Platform
 ```
 

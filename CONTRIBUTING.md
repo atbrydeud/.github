@@ -6,7 +6,7 @@ stricter local requirements, but it cannot relax authoritative Governance policy
 Start with [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md) and remember:
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
 ## Contribution baseline

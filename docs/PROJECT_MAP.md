@@ -5,13 +5,13 @@
 Start with the organizational stack:
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
 | Ask | Repository |
 |---|---|
-| Am I changing what **must be true**? | Governance |
 | Am I establishing an **account, identity, credential reference or provider connection**? | Bootstrap |
+| Am I changing what **must be true**? | Governance |
 | Am I defining a **deployable system, infrastructure module or runtime**? | Blueprints |
 | Am I creating a **reusable agent, skill, MCP or tool**? | Library |
 | Am I changing **how people and agents work**? | Operations |
@@ -22,11 +22,6 @@ RULE → CONNECT → DEPLOY → EQUIP → OPERATE
 
 | I need to change… | Repository |
 |---|---|
-| AI authority or autonomy rule | `ecosystem-governance` |
-| Human approval or break-glass requirement | `ecosystem-governance` |
-| GitHub ruleset requirement | `ecosystem-governance` |
-| Security, secrets, audit, data-boundary, RPO/RTO or retention requirement | `ecosystem-governance` |
-| Exception and change-control policy | `ecosystem-governance` |
 | Create/configure a GitHub organization, repositories, teams or GitHub App | `ecosystem-bootstrap` |
 | Slack account/workspace connection | `ecosystem-bootstrap` |
 | Plane account/workspace connection | `ecosystem-bootstrap` |
@@ -37,6 +32,11 @@ RULE → CONNECT → DEPLOY → EQUIP → OPERATE
 | OpenRouter account/API credential registration | `ecosystem-bootstrap` |
 | 1Password vault structure or secret-reference format | `ecosystem-bootstrap` |
 | OAuth application, OIDC federation or service-identity registration | `ecosystem-bootstrap` |
+| AI authority or autonomy rule | `ecosystem-governance` |
+| Human approval or break-glass requirement | `ecosystem-governance` |
+| GitHub ruleset requirement | `ecosystem-governance` |
+| Security, secrets, audit, data-boundary, RPO/RTO or retention requirement | `ecosystem-governance` |
+| Exception and change-control policy | `ecosystem-governance` |
 | Azure/AKS, networking, OpenZiti or storage deployment | `ecosystem-blueprints` |
 | Postgres, Redis, observability or backup/DR infrastructure | `ecosystem-blueprints` |
 | Argo CD/GitOps or CI runner deployment | `ecosystem-blueprints` |
@@ -92,7 +92,7 @@ RULE → CONNECT → DEPLOY → EQUIP → OPERATE
 ## Cross-layer work
 
 One outcome may require multiple repositories. Split it into linked pull requests
-in ownership order, usually Governance → Bootstrap → Blueprints → Library →
+in ownership order, usually Bootstrap → Governance → Blueprints → Library →
 Operations, with Platform/Protocols changes linked where relevant. Do not solve
 cross-layer work by putting every artifact in one repository.
 

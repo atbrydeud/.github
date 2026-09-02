@@ -4,13 +4,13 @@ Ask in the repository that owns the concern. This repository is the front door,
 not a central backlog.
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
 | I need help with… | Go to |
 |---|---|
-| Policy, security requirements, authority, exceptions or break-glass | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance/issues) |
 | GitHub/cloud/SaaS accounts, identities, credential references or connections | [`ecosystem-bootstrap`](https://github.com/atbrydeud/ecosystem-bootstrap/issues) |
+| Policy, security requirements, authority, exceptions or break-glass | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance/issues) |
 | Infrastructure, databases, observability, GitOps or Eve/TrueForge/AGNTCY/n8n runtime deployment | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints/issues) |
 | Reusable agent, skill, MCP, tool, adapter or eval | [`ecosystem-library`](https://github.com/atbrydeud/ecosystem-library/issues) |
 | Plane configuration, SOP, n8n flow, approval or operating process | [`ecosystem-operations`](https://github.com/atbrydeud/ecosystem-operations/issues) |

@@ -10,8 +10,8 @@
 
 <!-- Identify every affected layer and why. Use separate linked PRs for separate owners. -->
 
-- [ ] Governance / RULE
 - [ ] Bootstrap / CONNECT
+- [ ] Governance / RULE
 - [ ] Blueprints / DEPLOY
 - [ ] Library / EQUIP
 - [ ] Operations / OPERATE

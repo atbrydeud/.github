@@ -3,12 +3,14 @@
 These principles explain the ecosystem model. Binding requirements are authored
 in [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance).
 
-## 1. Clear ownership: RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+## 1. Clear ownership: CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 
-Governance defines requirements. Bootstrap establishes accounts and
-connections. Blueprints deploys systems. Library provides reusable intelligence.
-Operations composes those capabilities into work. Platform and Protocols remain
-the Web3 product/protocol domain.
+Bootstrap establishes accounts and connections first, because nothing can be
+governed until it is connected. Governance then defines requirements and
+enforces them onto those real accounts, identities and services. Blueprints
+deploys systems. Library provides reusable intelligence. Operations composes
+those capabilities into work. Platform and Protocols remain the Web3
+product/protocol domain.
 
 ## 2. AI-first
 

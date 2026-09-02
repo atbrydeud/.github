@@ -14,7 +14,7 @@ Orientation for people and agents arriving at At Bryde Ud.
 Remember the stack:
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
 ## Making a change
