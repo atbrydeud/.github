@@ -1,0 +1,111 @@
+name: Governance change
+description: Propose a change to what must be true - policy, baseline, authority or requirement.
+labels: ["governance", "needs-review"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this when the **requirement** changes, not the implementation.
+
+        Authoritative governance lives in
+        [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance) —
+        raise this there. **Policy before mechanism:** agree the requirement first,
+        then change the mechanism in the repository that owns it.
+  - type: textarea
+    id: policy
+    attributes:
+      label: Policy affected
+      description: The specific policy, baseline, control or requirement. Link or quote it.
+    validations:
+      required: true
+  - type: textarea
+    id: change
+    attributes:
+      label: Proposed change
+      description: What the requirement should become. Write it as it would read in policy.
+    validations:
+      required: true
+  - type: textarea
+    id: reason
+    attributes:
+      label: Reason
+      description: What changed - risk, obligation, incident, audit finding, technical reality.
+    validations:
+      required: true
+  - type: textarea
+    id: downstream
+    attributes:
+      label: Downstream impact
+      description: What downstream organizations must do differently, and by when.
+    validations:
+      required: true
+  - type: input
+    id: organizations
+    attributes:
+      label: Organizations affected
+      description: Named organizations, or "all", or "new organizations only".
+    validations:
+      required: true
+  - type: dropdown
+    id: migration
+    attributes:
+      label: Migration required
+      options:
+        - "No - applies to new organizations only"
+        - "Yes - automatic, applied by baseline upgrade"
+        - "Yes - manual action required downstream"
+        - "Unknown - needs analysis"
+    validations:
+      required: true
+  - type: textarea
+    id: migration_detail
+    attributes:
+      label: Migration path
+      description: If migration is required, what downstream teams actually have to do.
+    validations:
+      required: false
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Risk
+      options:
+        - "Low - clarification or tightening with no operational effect"
+        - "Medium - operational change required, no production risk"
+        - "High - production, security or availability risk if mishandled"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Proposed version bump
+      description: Major = breaking for downstream. Minor = new requirement, non-breaking. Patch = clarification.
+      options:
+        - "Major - breaking, downstream action required"
+        - "Minor - additive requirement"
+        - "Patch - clarification only"
+        - "Unsure"
+    validations:
+      required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback and exception considerations
+      description: How this is reverted if it goes wrong, and whether a time-boxed exception path is needed for organizations that cannot comply immediately.
+    validations:
+      required: true
+  - type: textarea
+    id: mechanism
+    attributes:
+      label: Mechanism changes needed
+      description: Which repositories must change to implement this, and in what order. See the project map.
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This changes what must be true, not just how something is built
+          required: true
+        - label: No secrets or confidential information appear in this proposal
+          required: true

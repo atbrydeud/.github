@@ -1,0 +1,72 @@
+name: Bug report
+description: Something in an At Bryde Ud repository does not behave as documented.
+labels: ["bug", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Open this in the repository that owns the behaviour — see the
+        [project map](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
+
+        **Do not report security vulnerabilities here.** Follow the
+        [security policy](https://github.com/atbrydeud/.github/blob/main/SECURITY.md) instead.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What is wrong
+      description: The observed behaviour, in a sentence or two.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: And where that expectation comes from (docs, policy, module contract).
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. …
+        2. …
+        3. …
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Repository, version or commit, baseline version, organization or environment, tooling versions.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Logs or evidence
+      description: Relevant output. **Redact secrets, tokens and identifiers before pasting.**
+      render: shell
+    validations:
+      required: false
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact
+      options:
+        - Blocking - work or production cannot proceed
+        - Significant - workaround exists but costly
+        - Minor - cosmetic or low friction
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This is the repository that owns the behaviour
+          required: true
+        - label: No secrets or credentials appear in this report
+          required: true
+        - label: This is not a security vulnerability
+          required: true
