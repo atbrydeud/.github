@@ -14,7 +14,7 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 1. **Change the owning repository.** Use
    [docs/PROJECT_MAP.md](docs/PROJECT_MAP.md) before implementation.
 2. **Split cross-layer work.** Use linked pull requests and explicit contracts;
-   do not place policy, connections, systems, intelligence and workflows together.
+   do not place connections, policy, systems, intelligence and workflows together.
 3. **Use a branch and pull request** for meaningful changes. Do not push
    conceptual or consequential work directly to the default branch.
 4. **Link the issue or work item** for non-trivial work where one exists.
