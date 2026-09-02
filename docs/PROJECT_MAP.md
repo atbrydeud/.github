@@ -96,6 +96,11 @@ in ownership order, usually Bootstrap → Governance → Blueprints → Library 
 Operations, with Platform/Protocols changes linked where relevant. Do not solve
 cross-layer work by putting every artifact in one repository.
 
+That ownership order is the organizational layer order, not the order in which
+changes land. Policy comes before mechanism: when a change alters a requirement,
+the Governance change is authorized and landed first, then the linked pull
+requests that implement it — see [../GOVERNANCE.md](../GOVERNANCE.md).
+
 When an existing artifact is in the wrong repository, preserve it, record the
 migration and move it in a separate change unless the move is demonstrably safe
 and trivial. See [MIGRATION_FOLLOW_UPS.md](MIGRATION_FOLLOW_UPS.md).

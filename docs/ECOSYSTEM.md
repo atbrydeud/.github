@@ -112,8 +112,8 @@ templates, Definitions of Done, approval flows, SOPs, n8n workflows,
 engineering/release/incident processes, infrastructure-request procedures,
 business workflows and human/agent handoffs.
 
-Operations composes Library capabilities running on Blueprint systems, within
-the Governance rules that apply to the Bootstrap connections underneath.
+Operations composes Library capabilities running on Blueprint systems, using
+Bootstrap connections, within Governance rules.
 
 ### 6. ecosystem-platform — WEB3 PRODUCT
 
