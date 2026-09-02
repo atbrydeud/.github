@@ -55,8 +55,8 @@ body:
     attributes:
       label: Additional work required
       options:
-        - label: Governance/policy decision
         - label: New provider account, identity or credential reference
+        - label: Governance/policy decision
         - label: Infrastructure/runtime deployment change
         - label: Reusable Library capability
         - label: Operations workflow/SOP change

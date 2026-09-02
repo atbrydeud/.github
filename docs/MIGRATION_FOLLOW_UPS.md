@@ -25,6 +25,10 @@ reviewed migration. It does not authorize moving or deleting production code.
 
 ## Recommended order
 
+This order follows migration logic — inventory before you move, the destination
+contract before the move lands — and is deliberately independent of the layer
+order.
+
 1. Governance enforcement inventory and classification
 2. Bootstrap provider catalogue and secret-reference contract
 3. Blueprints runtime deployment contracts
