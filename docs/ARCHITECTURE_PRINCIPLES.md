@@ -1,85 +1,90 @@
 # Architecture Principles
 
-The principles behind the ecosystem model. They are deliberately short. Where a
-principle needs to become binding, it is expressed as policy in
-[`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance) —
-this document explains the reasoning, it does not enforce it.
+These principles explain the ecosystem model. Binding requirements are authored
+in [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance).
 
----
+## 1. Clear ownership: RULE → CONNECT → DEPLOY → EQUIP → OPERATE
 
-### 1. AI-first by default
-Agents are first-class participants. Repositories, docs and interfaces are
-written so that both humans and agents can orient themselves and act. Reusable
-intelligence is a shared, versioned capability, not a private script.
+Governance defines requirements. Bootstrap establishes accounts and
+connections. Blueprints deploys systems. Library provides reusable intelligence.
+Operations composes those capabilities into work. Platform and Protocols remain
+the Web3 product/protocol domain.
 
-### 2. Git is the source of truth
-Ecosystem and organization configuration is expressed as code, reviewed as code,
-and reconstructible from a repository. A console or SaaS UI may be a convenient
-surface; it is never the record.
+## 2. AI-first
 
-### 3. Policy as code where practical
-Requirements that can be machine-checked should be. Policy that can only exist
-as prose is still policy — but prefer the form that can be evaluated in CI.
+Agents are first-class participants. Repositories, interfaces and processes must
+be legible to people and agents, while authority remains explicit and auditable.
 
-### 4. Infrastructure as Code
-No hand-built environments. Infrastructure is declared, versioned, planned and
-applied. Anything created by hand is treated as drift.
+## 3. Git is canonical for definitions
 
-### 5. Identity over long-lived credentials
-Prefer identity-based access to stored secrets. Long-lived credentials are an
-exception that must be justified, scoped and rotated.
+Configuration, policy, schemas, workflows and reusable components are reviewed
+as code where practical. A SaaS console can be an operational surface but must
+not be the only record of how the ecosystem is shaped.
 
-### 6. OIDC and workload identity where supported
-CI/CD to cloud, and workload to service, should federate rather than carry keys.
-Where a provider does not support federation, isolate and rotate.
+## 4. Infrastructure and configuration as code where practical
 
-### 7. Shared standards, isolated organizations
-Standards, modules, workflows and protocols are shared upstream. Identity,
-state, secrets, data and production authority are isolated per organization.
-*Shared code and standards; separate state and authority.*
+Prefer repeatable, reviewable automation. Some provider steps remain assisted or
+manual because billing, legal agreements, MFA, consent and identity proofing are
+appropriately human.
 
-### 8. Control-plane failure must not cause downstream failure
-The At Bryde Ud platform observes, coordinates and provisions. If it is
-unavailable, downstream organizations keep running, deploying and recovering.
-No downstream production path may depend on upstream availability.
+## 5. Secrets stay outside Git
 
-### 9. SaaS is acceptable when it provides leverage
-Buy the thing that is not your differentiator. The condition is that its
-configuration is reproducible from Git and its loss has a known answer.
+Secret values belong in approved stores. Bootstrap records provider/credential
+references and connection metadata. Prefer OIDC/workload identity to long-lived
+credentials; scope, rotate and revoke unavoidable credentials.
 
-### 10. Open source and self-hosting when ownership justifies it
-Where portability, sovereignty or ownership of data and capability matter more
-than operational convenience, self-host — deliberately, not reflexively.
+## 6. Shared standards, isolated organizations
 
-### 11. Minimal sufficient infrastructure
-Build the smallest thing that meets the requirement. Complexity is a permanent
-operational cost paid by whoever is on call, including agents.
+Share code, protocols, skills and baselines upstream. Keep each organization's
+identity, state, secrets, data, infrastructure and production authority separate.
+Inheritance never implies central access.
 
-### 12. Explicit authority boundaries
-Every repository, environment and agent has a stated scope of authority. If it
-is unclear who may approve or apply a change, that is a defect to fix in
-governance, not a judgement call to make at merge time.
+## 7. Humans retain consequential authority
 
-### 13. Versioned baselines
-Downstream organizations consume named baseline versions, not a moving branch.
-Upgrades are explicit, reviewable and reversible, with a stated migration path.
+Agents operate under explicit authority boundaries. Financial actions,
+production changes, security-control relaxation, destructive actions and other
+consequential decisions retain the human authorization Governance requires.
 
-### 14. Drift detection
-Declared state is continuously compared against actual state. Drift is surfaced,
-attributed and either corrected or converted into an approved exception.
+## 8. Downstream independence
 
-### 15. Downstream environments are independently operable
-A downstream organization can be operated, debugged and recovered by its own
-team with its own credentials, using documentation it holds. Dependence on
-upstream humans is a design failure.
+An organization must keep operating, deploying and recovering if At Bryde Ud's
+central Platform or services are unavailable. Central coordination must not
+become a production dependency.
 
----
+## 9. Versioned baselines and explicit contracts
 
-## Applying these
+Consume immutable releases/tags/digests rather than moving branches. Define
+inputs, outputs, permissions, compatibility and migrations at every layer
+boundary.
 
-| Situation | Expected behaviour |
+## 10. Detect drift
+
+Compare declared and actual state. Surface drift with evidence, then correct it
+or record a time-boxed Governance exception.
+
+## 11. Minimal direct dependencies
+
+Repositories should depend on stable contracts, not each other's internal
+layout. Bootstrap is the natural connector/assembler, but it must not become a
+monolithic owner of systems, intelligence and workflows.
+
+## 12. Pragmatic SaaS; deliberate sovereignty
+
+Use SaaS where it provides meaningful leverage and exit/recovery is understood.
+Prefer open source or self-hosting where sovereignty, ownership, portability or
+economics justify the operating cost.
+
+## 13. Minimal sufficient complexity
+
+Build the smallest capability that meets the requirement. Every service,
+abstraction and integration creates a long-lived operational obligation.
+
+## Applying the principles
+
+| Situation | Expected response |
 |---|---|
-| A principle conflicts with a deadline | Raise an exception through `ecosystem-governance`, do not silently deviate. |
-| A principle conflicts with policy | Policy wins. Fix the principle or the policy — do not leave them in conflict. |
-| A principle is unclear in practice | Propose a clarification via PR to this file with a concrete example. |
-| A change violates a principle for good reason | Say so explicitly in the pull request, under risk. |
+| A principle conflicts with policy | Policy wins; reconcile the documents through review |
+| A deadline pressures a binding requirement | Request a Governance exception; do not silently bypass it |
+| Ownership is ambiguous | Use the project map and define the cross-layer contract before implementation |
+| A change deliberately violates a principle | State the reason, risk, duration, owner and rollback in the pull request |
+

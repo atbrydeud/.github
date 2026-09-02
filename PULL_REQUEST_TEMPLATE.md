@@ -1,47 +1,56 @@
 ## Summary
 
-<!-- What changes, in one or two sentences. -->
+<!-- What changes, in one or two sentences? -->
 
-## Reason / context
+## Why
 
-<!-- Why this change, now. Link the governance change if this implements one. -->
+<!-- Why is the change needed? Link the issue/work item and Governance change if applicable. -->
 
-## Linked work item
+## Ownership and layer impact
 
-<!-- Issue, Plane work item, or governance change. "None — trivial" is a valid answer. -->
+<!-- Identify every affected layer and why. Use separate linked PRs for separate owners. -->
 
-## Risk
+- [ ] Governance / RULE
+- [ ] Bootstrap / CONNECT
+- [ ] Blueprints / DEPLOY
+- [ ] Library / EQUIP
+- [ ] Operations / OPERATE
+- [ ] Platform
+- [ ] Protocols
+- [ ] Organization front door only (`.github`)
 
-<!-- What could go wrong, and who is affected. Say "low — no runtime impact" if that is true. -->
+## Testing and evidence
 
-- [ ] Low &nbsp;&nbsp; - [ ] Medium &nbsp;&nbsp; - [ ] High
+<!-- Commands, plan/dry-run output, link checks, screenshots or other evidence. -->
 
-## Testing / evidence
+## Risk, security and authority
 
-<!-- What you ran and what it showed: test output, plan output, dry run, screenshots. -->
+<!-- Data/secrets, permissions, production, financial, external-communication or policy impact. -->
 
-## Security impact
+- Risk: low / medium / high
+- Human authorization required: yes / no
+- Governance or exception reference: none / link
 
-<!-- Secrets, identity, permissions, network exposure, dependencies. "None" is a valid answer.
-     Never describe an unfixed vulnerability here — see SECURITY.md. -->
+## Migration and operational impact
 
-## Operational impact
-
-<!-- Downstream organizations affected, migration or baseline version bump required,
-     runbook or SOP changes, monitoring or alerting changes. -->
-
-## AI assistance
-
-- [ ] AI-assisted &nbsp;&nbsp; - [ ] Not AI-assisted
-
-<!-- If AI-assisted: what the agent did, and confirmation that you reviewed the diff.
-     You remain accountable for this change. -->
+<!-- Downstream consumers, version bumps, rollout order, runbook/SOP changes and compatibility. -->
 
 ## Rollback
 
-<!-- How to undo this if it goes wrong. Omit only if genuinely not applicable. -->
+<!-- How to return to the previous safe state. -->
 
----
+## AI assistance
 
-- [ ] I have read [CONTRIBUTING.md](https://github.com/atbrydeud/.github/blob/main/CONTRIBUTING.md) and this change is in the repository that owns it
-- [ ] No secrets or credentials are exposed in this change, its tests or its output
+- [ ] AI-assisted
+- [ ] Not AI-assisted
+
+<!-- If assisted, summarize the work and confirm the accountable human reviewed the diff and evidence. -->
+
+## Final checks
+
+- [ ] This change is in the repository that owns it, per [PROJECT_MAP.md](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md)
+- [ ] Cross-layer work is split into linked pull requests with explicit interfaces
+- [ ] No secrets, credentials or sensitive output appear in the change or evidence
+- [ ] Documentation, tests and migration notes are updated where needed
+- [ ] I reviewed the complete diff
+
