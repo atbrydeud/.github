@@ -1,0 +1,75 @@
+name: Feature or change request
+description: Propose new or changed capability in an At Bryde Ud repository.
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Open this in the repository that owns the capability — see the
+        [project map](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
+
+        Changing what **must be true** is a governance change, not a feature
+        request. Use the governance change template in
+        [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance/issues/new/choose).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is hard, missing or repeatedly painful today. Not the solution.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: What you would build or change, at a level someone could review.
+    validations:
+      required: true
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Owning project
+      description: Which of the seven projects owns this. Unsure is a valid answer.
+      options:
+        - ecosystem-governance
+        - ecosystem-bootstrap
+        - ecosystem-blueprints
+        - ecosystem-platform
+        - ecosystem-operations
+        - ecosystem-library
+        - ecosystem-protocols
+        - Unsure - needs triage
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Who this affects
+      description: Downstream organizations, teams, agents, external consumers.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including doing nothing, and why it is not enough.
+    validations:
+      required: false
+  - type: checkboxes
+    id: implications
+    attributes:
+      label: Does this require any of the following?
+      options:
+        - label: A governance/policy change
+        - label: A baseline version bump
+        - label: Migration by downstream organizations
+        - label: A change in another of the seven projects
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: This is the repository that owns the capability, or I have marked the owner as unsure
+          required: true
+        - label: No secrets or confidential information appear in this request
+          required: true

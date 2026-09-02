@@ -1,0 +1,32 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Which repository owns my change?
+    url: https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md
+    about: Decision guide - open the issue in the repository that owns the concern.
+  - name: Report a security vulnerability
+    url: https://github.com/atbrydeud/.github/blob/main/SECURITY.md
+    about: Never report vulnerabilities in a public issue. Use private reporting.
+  - name: Ecosystem overview
+    url: https://github.com/atbrydeud/.github/blob/main/docs/ECOSYSTEM.md
+    about: How At Bryde Ud and the seven ecosystem projects fit together.
+  - name: Governance, policy and baselines
+    url: https://github.com/atbrydeud/ecosystem-governance/issues
+    about: Policy, authority, security baseline, AI policy, exceptions.
+  - name: Organization bootstrap and baseline application
+    url: https://github.com/atbrydeud/ecosystem-bootstrap/issues
+    about: Creating or upgrading a standalone organization.
+  - name: Infrastructure blueprints
+    url: https://github.com/atbrydeud/ecosystem-blueprints/issues
+    about: OpenTofu modules, Azure/AKS architecture, networking, observability, data.
+  - name: Ecosystem platform
+    url: https://github.com/atbrydeud/ecosystem-platform/issues
+    about: Dashboard, registry, APIs, lifecycle, approvals, Web3 and treasury.
+  - name: Operations
+    url: https://github.com/atbrydeud/ecosystem-operations/issues
+    about: Plane configuration, workflows, SOPs, release and incident processes.
+  - name: Library
+    url: https://github.com/atbrydeud/ecosystem-library/issues
+    about: Agents, skills, tools, MCP servers, evals, permission profiles.
+  - name: Protocols
+    url: https://github.com/atbrydeud/ecosystem-protocols/issues
+    about: Protocol specifications, contracts, SDKs, compatibility.
