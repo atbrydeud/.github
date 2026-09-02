@@ -1,75 +1,74 @@
 name: Feature or change request
-description: Propose new or changed capability in an At Bryde Ud repository.
+description: Propose a capability in the repository that owns it.
 labels: ["enhancement", "needs-triage"]
 body:
   - type: markdown
     attributes:
       value: |
-        Open this in the repository that owns the capability — see the
-        [project map](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
-
-        Changing what **must be true** is a governance change, not a feature
-        request. Use the governance change template in
-        [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance/issues/new/choose).
+        Route the work with [RULE → CONNECT → DEPLOY → EQUIP → OPERATE](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
+        A change to what **must be true** is a Governance change, not an implementation feature.
   - type: textarea
     id: problem
     attributes:
       label: Problem
-      description: What is hard, missing or repeatedly painful today. Not the solution.
+      description: What is hard, missing or repeatedly painful today?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed change
-      description: What you would build or change, at a level someone could review.
+      label: Proposed outcome
+      description: Describe the outcome and the smallest useful change.
     validations:
       required: true
   - type: dropdown
     id: owner
     attributes:
-      label: Owning project
-      description: Which of the seven projects owns this. Unsure is a valid answer.
+      label: Owning repository
       options:
-        - ecosystem-governance
-        - ecosystem-bootstrap
-        - ecosystem-blueprints
-        - ecosystem-platform
-        - ecosystem-operations
-        - ecosystem-library
-        - ecosystem-protocols
-        - Unsure - needs triage
+        - ecosystem-governance — RULE
+        - ecosystem-bootstrap — CONNECT
+        - ecosystem-blueprints — DEPLOY
+        - ecosystem-library — EQUIP
+        - ecosystem-operations — OPERATE
+        - ecosystem-platform — WEB3 PRODUCT
+        - ecosystem-protocols — WEB3 PROTOCOLS
+        - Unsure — needs triage
     validations:
       required: true
+  - type: textarea
+    id: contracts
+    attributes:
+      label: Cross-layer inputs and outputs
+      description: Which other repositories provide inputs or consume outputs? Separate implementation by owner.
+    validations:
+      required: false
   - type: textarea
     id: impact
     attributes:
-      label: Who this affects
-      description: Downstream organizations, teams, agents, external consumers.
+      label: Impact
+      description: People, agents, organizations, data, production or external users affected.
     validations:
       required: true
-  - type: textarea
-    id: alternatives
-    attributes:
-      label: Alternatives considered
-      description: Including doing nothing, and why it is not enough.
-    validations:
-      required: false
   - type: checkboxes
     id: implications
     attributes:
-      label: Does this require any of the following?
+      label: Additional work required
       options:
-        - label: A governance/policy change
-        - label: A baseline version bump
-        - label: Migration by downstream organizations
-        - label: A change in another of the seven projects
+        - label: Governance/policy decision
+        - label: New provider account, identity or credential reference
+        - label: Infrastructure/runtime deployment change
+        - label: Reusable Library capability
+        - label: Operations workflow/SOP change
+        - label: Platform or Protocols integration
+        - label: Baseline/version migration
   - type: checkboxes
     id: checks
     attributes:
       label: Before submitting
       options:
-        - label: This is the repository that owns the capability, or I have marked the owner as unsure
+        - label: I used the project map or marked ownership as unsure
           required: true
-        - label: No secrets or confidential information appear in this request
+        - label: No secrets, credentials or confidential data appear in this request
           required: true
+

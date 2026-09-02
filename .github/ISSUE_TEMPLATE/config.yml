@@ -2,31 +2,32 @@ blank_issues_enabled: true
 contact_links:
   - name: Which repository owns my change?
     url: https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md
-    about: Decision guide - open the issue in the repository that owns the concern.
+    about: Use RULE → CONNECT → DEPLOY → EQUIP → OPERATE to route the work.
   - name: Report a security vulnerability
     url: https://github.com/atbrydeud/.github/blob/main/SECURITY.md
-    about: Never report vulnerabilities in a public issue. Use private reporting.
-  - name: Ecosystem overview
+    about: Never report vulnerabilities or credentials in a public issue.
+  - name: Ecosystem architecture
     url: https://github.com/atbrydeud/.github/blob/main/docs/ECOSYSTEM.md
-    about: How At Bryde Ud and the seven ecosystem projects fit together.
-  - name: Governance, policy and baselines
+    about: Canonical ownership model for the seven ecosystem repositories.
+  - name: Governance — RULE
     url: https://github.com/atbrydeud/ecosystem-governance/issues
-    about: Policy, authority, security baseline, AI policy, exceptions.
-  - name: Organization bootstrap and baseline application
+    about: Policy, security requirements, authority, audit, exceptions and change control.
+  - name: Bootstrap — CONNECT
     url: https://github.com/atbrydeud/ecosystem-bootstrap/issues
-    about: Creating or upgrading a standalone organization.
-  - name: Infrastructure blueprints
+    about: Accounts, providers, identities, credential references and service connections.
+  - name: Blueprints — DEPLOY
     url: https://github.com/atbrydeud/ecosystem-blueprints/issues
-    about: OpenTofu modules, Azure/AKS architecture, networking, observability, data.
-  - name: Ecosystem platform
-    url: https://github.com/atbrydeud/ecosystem-platform/issues
-    about: Dashboard, registry, APIs, lifecycle, approvals, Web3 and treasury.
-  - name: Operations
-    url: https://github.com/atbrydeud/ecosystem-operations/issues
-    about: Plane configuration, workflows, SOPs, release and incident processes.
-  - name: Library
+    about: Infrastructure, systems and runtime deployments.
+  - name: Library — EQUIP
     url: https://github.com/atbrydeud/ecosystem-library/issues
-    about: Agents, skills, tools, MCP servers, evals, permission profiles.
+    about: Reusable agents, skills, MCPs, tools, adapters and evals.
+  - name: Operations — OPERATE
+    url: https://github.com/atbrydeud/ecosystem-operations/issues
+    about: Plane configuration, SOPs, n8n flows and human/agent processes.
+  - name: Platform
+    url: https://github.com/atbrydeud/ecosystem-platform/issues
+    about: At Bryde Ud ecosystem/Web3 product, dashboard, registry, APIs and integrations.
   - name: Protocols
     url: https://github.com/atbrydeud/ecosystem-protocols/issues
-    about: Protocol specifications, contracts, SDKs, compatibility.
+    about: Protocol specifications, smart contracts, SDKs and compatibility.
+
