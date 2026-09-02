@@ -60,16 +60,20 @@ The repository architecture turns that larger vision into a practical operating
 model:
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
 | Layer | Repository | Responsibility |
 |---|---|---|
-| **RULE** | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance) | Defines what must be true and who has authority |
 | **CONNECT** | [`ecosystem-bootstrap`](https://github.com/atbrydeud/ecosystem-bootstrap) | Establishes accounts, identities, secrets architecture and service connections |
+| **RULE** | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance) | Defines what must be true and who has authority |
 | **DEPLOY** | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints) | Deploys infrastructure, shared systems and agent runtimes |
 | **EQUIP** | [`ecosystem-library`](https://github.com/atbrydeud/ecosystem-library) | Supplies reusable agents, skills, MCPs, tools and components |
 | **OPERATE** | [`ecosystem-operations`](https://github.com/atbrydeud/ecosystem-operations) | Composes those capabilities into repeatable human and agent work |
+
+Connection comes before rule: you cannot govern a tool that is not connected
+yet. Once Bootstrap has established the accounts, identities and credentials,
+Governance has something real to enforce its rules onto.
 
 [`ecosystem-platform`](https://github.com/atbrydeud/ecosystem-platform) is the
 At Bryde Ud ecosystem/Web3 product and coordination surface.

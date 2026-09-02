@@ -2,19 +2,19 @@ blank_issues_enabled: true
 contact_links:
   - name: Which repository owns my change?
     url: https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md
-    about: Use RULE → CONNECT → DEPLOY → EQUIP → OPERATE to route the work.
+    about: Use CONNECT → RULE → DEPLOY → EQUIP → OPERATE to route the work.
   - name: Report a security vulnerability
     url: https://github.com/atbrydeud/.github/blob/main/SECURITY.md
     about: Never report vulnerabilities or credentials in a public issue.
   - name: Ecosystem architecture
     url: https://github.com/atbrydeud/.github/blob/main/docs/ECOSYSTEM.md
     about: Canonical ownership model for the seven ecosystem repositories.
-  - name: Governance — RULE
-    url: https://github.com/atbrydeud/ecosystem-governance/issues
-    about: Policy, security requirements, authority, audit, exceptions and change control.
   - name: Bootstrap — CONNECT
     url: https://github.com/atbrydeud/ecosystem-bootstrap/issues
     about: Accounts, providers, identities, credential references and service connections.
+  - name: Governance — RULE
+    url: https://github.com/atbrydeud/ecosystem-governance/issues
+    about: Policy, security requirements, authority, audit, exceptions and change control.
   - name: Blueprints — DEPLOY
     url: https://github.com/atbrydeud/ecosystem-blueprints/issues
     about: Infrastructure, systems and runtime deployments.

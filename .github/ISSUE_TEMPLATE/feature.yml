@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Route the work with [RULE → CONNECT → DEPLOY → EQUIP → OPERATE](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
+        Route the work with [CONNECT → RULE → DEPLOY → EQUIP → OPERATE](https://github.com/atbrydeud/.github/blob/main/docs/PROJECT_MAP.md).
         A change to what **must be true** is a Governance change, not an implementation feature.
   - type: textarea
     id: problem
@@ -26,8 +26,8 @@ body:
     attributes:
       label: Owning repository
       options:
-        - ecosystem-governance — RULE
         - ecosystem-bootstrap — CONNECT
+        - ecosystem-governance — RULE
         - ecosystem-blueprints — DEPLOY
         - ecosystem-library — EQUIP
         - ecosystem-operations — OPERATE
@@ -55,8 +55,8 @@ body:
     attributes:
       label: Additional work required
       options:
-        - label: Governance/policy decision
         - label: New provider account, identity or credential reference
+        - label: Governance/policy decision
         - label: Infrastructure/runtime deployment change
         - label: Reusable Library capability
         - label: Operations workflow/SOP change

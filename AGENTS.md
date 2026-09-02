@@ -31,7 +31,7 @@ not an implementation layer.
 ## Validation
 
 Check internal and absolute links, Markdown/YAML syntax, repository names,
-consistent use of **RULE → CONNECT → DEPLOY → EQUIP → OPERATE**, and alignment
+consistent use of **CONNECT → RULE → DEPLOY → EQUIP → OPERATE**, and alignment
 between the profile, ecosystem map, project map, support routing and templates.
 Review the full diff and open a scoped pull request with no runtime impact.
 

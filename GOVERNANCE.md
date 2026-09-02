@@ -8,11 +8,12 @@ and break-glass requirements live in
 ## Governance in the ecosystem
 
 ```text
-RULE → CONNECT → DEPLOY → EQUIP → OPERATE
+CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ```
 
-- Governance decides what must be true.
 - Bootstrap establishes accounts, identities, credential references and connections.
+- Governance decides what must be true, and its rules are enforced onto those
+  connected accounts, identities and services.
 - Blueprints deploys systems and runtimes that satisfy requirements.
 - Library supplies reusable agents, skills, MCPs and tools.
 - Operations defines the process, handoffs and approvals used in practice.
