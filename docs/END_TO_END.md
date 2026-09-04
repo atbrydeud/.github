@@ -7,6 +7,9 @@ repositories in the stack.
 actually *do*, and which command does it. It stops where DEPLOY stops; EQUIP and OPERATE
 are named at the end but not covered.
 
+If all you need is TrueForge running today, take the
+[shortcut](#shortcut--a-running-trueforge-today) instead. It names everything it skips.
+
 ## The shape is not a straight line
 
 The canonical order is `CONNECT → RULE → DEPLOY`, and that order is real: you cannot
@@ -62,6 +65,96 @@ Blueprints forbids the Terraform CLI in its own repository, and Governance's enf
 goes through its own CLI and each provider's API rather than through infrastructure-as-code.
 Infrastructure-as-code tooling belongs to DEPLOY; when the RULE layer borrows it, the
 boundary the model is built on gets blurred at the point it matters most.
+
+---
+
+## Shortcut — a running TrueForge today
+
+The sequence above is the real path. This is not it. This is the fastest honest route to
+TrueForge answering on a URL, for when the point is to see it run rather than to stand up
+an organization. Every control it drops is named as a skip below, because a skipped control
+that reads as a completed step is worse than no step at all.
+
+Chart facts here come from Blueprints'
+[`docs/TRUEFORGE_DEPLOYMENT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/TRUEFORGE_DEPLOYMENT.md),
+which verified them against the upstream chart and pinned them to a released commit. Chart
+`0.1.6-rc.0` is that commit's chart: its published values file and the pinned commit's are
+identical apart from a trailing newline.
+
+**What you end up with:** the stock TrueForge server — API and UI from one image — with the
+chart's own bundled Postgres and Redis, on a cluster you can throw away, reached through a
+port-forward, with no login of any kind.
+
+### What you need
+
+- `helm` (3.x) and `kubectl`.
+- A Kubernetes cluster at `>=1.25`, the chart's own `kubeVersion` floor. Any cluster does;
+  the commands below stand up a local one with `kind`, which needs Docker.
+- Nothing else. No subscription, no credential, no declaration file, no `tofu`.
+
+### The sequence
+
+Create a cluster. Skip this step if you already have one and its context is current.
+
+```bash
+kind create cluster --name trueforge-fastpath
+```
+
+Install the chart. It is anonymously pullable, and **no values are required**: Postgres and
+Redis are bundled subcharts that default to enabled, so the chart is installable as it ships.
+
+```bash
+helm install trueforge oci://tfy.jfrog.io/tfy-helm/trueforge \
+  --version 0.1.6-rc.0 \
+  --namespace trueforge --create-namespace \
+  --wait --timeout 12m
+```
+
+The server container exits and restarts once or twice while Postgres finishes coming up —
+the previous container's log ends at `connect ECONNREFUSED <cluster IP>:5432`. That is the
+expected startup sequence and it clears itself; `--wait` returns once the pod is genuinely
+ready. Helm then prints the release notes, which repeat every warning listed below.
+
+Reach it:
+
+```bash
+kubectl --namespace trueforge port-forward svc/trueforge 8790:8790
+```
+
+Leave that running, and from a second terminal:
+
+```bash
+curl http://localhost:8790/healthz
+```
+
+That answers `{"status":"ok","version":"0.2.0-rc.0"}`. Open <http://localhost:8790> for the
+UI. Tear the whole thing down with:
+
+```bash
+kind delete cluster --name trueforge-fastpath
+```
+
+This sequence was run end to end on 2026-09-04 against `kind` v0.30.0 (Kubernetes v1.34.0)
+and `helm` v3.16.3: the release reached `deployed`, all three pods reached `1/1 Running`,
+and both `/healthz` and the UI returned HTTP 200.
+
+### What it skips, and what that costs
+
+| Shortcut | What it costs | What the full path does instead |
+|---|---|---|
+| **No CONNECT, no RULE.** Nothing is declared and nothing is governed. | The deployment exists outside the record. No layer knows about it, no control applies to it, and nothing will notice when it drifts or when you forget it is there. | Steps 1 and 2: a declaration Blueprints reads, and enforcement applied to what was connected. |
+| **OIDC is off.** This is the chart's own default, not our choice. | The chart documents this default as a fixed local admin identity: **anyone who can reach the API or the UI is an administrator.** The port-forward is the only thing keeping that to you. Never expose this release. | Blueprints' rules for this chart never generate `enabled: false`; a declaration with no identity provider is refused, `clientSecret` is only ever a secret reference, and `server.publicBaseUrl` is always set. |
+| **Port-forward, no ingress, no TLS.** The chart ships no Ingress, Gateway or VirtualService at all. | The URL exists only while `kubectl port-forward` is running, on your machine only, over plain HTTP. Nobody else can reach it. | Blueprints generates an Ingress through the chart's `extraObjects` hook, which still needs an ingress controller running in the cluster. |
+| **Bundled Postgres and Redis with the chart's dev defaults.** | Postgres runs on a well-known password published in the chart's own values file, Redis runs with authentication disabled, and both live in the cluster — Helm leaves their PVCs behind on uninstall. Deleting the cluster deletes the data. | An external managed Postgres and Redis over private endpoints, so data outlives the cluster. That path needs modules Blueprints has not built yet, so it is not deliverable today by either route. |
+| **The stock image, unbranded.** | TrueForge's own colours. This is not a configuration you forgot to set: branding is applied when the interface is built, and there is no runtime path — no file, no endpoint, no environment variable. | Blueprints generates theme tokens for a branded UI build; someone then runs that build and the release points at the resulting image. |
+| **A throwaway local cluster, stood up by hand.** | Nothing here is reproducible from source. It exists on one laptop until `kind delete cluster`. | Step 3: a root module you own, `tofu plan` and `tofu apply` against your subscription, on AKS or Talos. |
+
+The first three rows are the ones that decide when to stop using this path. **The moment
+anything reaches this release other than you through your own port-forward, it needs OIDC
+on and a real ingress in front of it** — and at that point you are not taking the shortcut
+any more, you are on Step 3 and should read
+[`docs/TRUEFORGE_DEPLOYMENT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/TRUEFORGE_DEPLOYMENT.md)
+before going further.
 
 ---
 
