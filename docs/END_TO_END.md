@@ -167,9 +167,9 @@ npx github:atbrydeud/ecosystem-governance plan ubqty-labs   # go and look at ubq
 npx github:atbrydeud/ecosystem-governance apply ubqty-labs  # change ubqty-labs. Needs a human, always.
 ```
 
-That argument is the **GitHub organization login**, not the declaration slug you carried
-over from CONNECT. For this company the two differ: `ubqty-labs` is the login, `ubqty` is
-the slug.
+That argument is the **GitHub organization login**. The declaration slug from CONNECT
+defaults to a transcription of it, so the two are usually the same string — they differ
+only if `--org` named a different slug, and the login is still what belongs here.
 
 `status` takes no organization: it is offline and reports every declared target, which
 costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
