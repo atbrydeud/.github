@@ -151,18 +151,39 @@ Blueprints.
 You define rules by editing YAML, and apply them with the CLI:
 
 ```text
-enforcement/controls/control-catalog.yaml     the controls themselves
-enforcement/controls/risk-levels.yaml         how severity is classified
-enforcement/controls/exceptions.yaml          what is exempt, and why
-enforcement/companies/<organization>.yaml     which controls apply to whom
-enforcement/github/                           GitHub organization enforcement
+enforcement/controls/control-catalog.yaml      the controls themselves
+enforcement/controls/repo-classification.yaml  which controls each class carries
+enforcement/controls/risk-levels.yaml          how severity is classified
+enforcement/controls/exceptions.yaml           what is exempt, and why
+enforcement/companies/<organization>.yaml      which controls apply to whom
+enforcement/github/                            GitHub organization enforcement
 ```
 
+`plan` and `apply` take the organization to act on. Name it every time:
+
 ```bash
-npx github:atbrydeud/ecosystem-governance status   # what we believe. No network, no credential.
-npx github:atbrydeud/ecosystem-governance plan     # go and look. Read-only.
-npx github:atbrydeud/ecosystem-governance apply    # change things. Needs a human, always.
+npx github:atbrydeud/ecosystem-governance status       # what we believe. No network, no credential.
+npx github:atbrydeud/ecosystem-governance plan ubqty   # go and look at ubqty. Read-only.
+npx github:atbrydeud/ecosystem-governance apply ubqty  # change ubqty. Needs a human, always.
 ```
+
+`status` takes no organization: it is offline and reports every declared target, which
+costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
+useful sense — **an omitted organization means every target, not a sensible default.**
+Where a bare `apply` is not refused outright, the target filter passes everything and the
+run reaches every organization declared under `enforcement/companies/` rather than the one
+you meant. Name the organization and the question never arises.
+
+The name has to match the `organization:` field in a company file. Those files ship with
+`{{ORG_A}}`-style placeholders, so `plan ubqty` matches nothing and prints
+`no targets matched` until `ubqty` is declared — the placeholder replaced, and its
+repositories classified against a class from `repo-classification.yaml`. Declaring it is
+the first edit of this step, not something someone else did for you.
+
+**`atbrydeud` is deliberately the last organization enforced, not the first.** A user
+cleanup comes before rules land on it, so enforcement is proven on the other organizations
+first — `ubqty` is the working target. `atbrydeud` comes under the same controls once that
+cleanup is done. This is the standing order of work, not a note waiting to be cleared.
 
 Every rule and target gets exactly one outcome per run — `applied`, `already-conforming`,
 `not-yet-applicable`, `not-conforming`, `blocked` or `unknown` — and never none. **`unknown`
@@ -174,12 +195,15 @@ The workflows cover the review loop:
 | Workflow | Fires on | What it does |
 |---|---|---|
 | `validate` | pull request | Checks the YAML and formatting |
-| `plan-governance` | pull request | Shows what applying would change |
-| `apply-governance` | push to the default branch | Applies it |
-| `audit-drift` | schedule | Reports where reality has diverged from the rules |
+| `plan-governance` | pull request touching `enforcement/**` | Shows what applying would change |
+| `apply-governance` | push to the default branch touching `enforcement/**` | Applies it, behind an environment approval |
+| `audit-drift` | schedule, or on demand | Reports where reality has diverged from the rules |
+
+Those workflows drive the Terraform under `enforcement/terraform/`, not `bryde-govern`.
+Merging a rule does not run the CLI on your organization for you.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
-itself requires → merge → `bryde-govern apply` puts it onto the connected things.
+itself requires → merge → `bryde-govern apply ubqty` puts it onto the connected things.
 
 Read [`docs/APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
 before your first change. It is normative, and it defines the split between *defining* a
@@ -277,9 +301,9 @@ declarative and which a person performs.
 | 4 | Confirm what is real | CONNECT | **Human, always** | `bryde-connect verify` |
 | 5 | Authorize the declaration | CONNECT | **Human** | `bryde-connect apply` |
 | 6 | State the requirements | RULE | Human or agent | Edit YAML, open a PR |
-| 7 | See what would change | RULE | Human or agent | `bryde-govern plan` |
+| 7 | See what would change | RULE | Human or agent | `bryde-govern plan <org>` |
 | 8 | Read the plan, get approval | RULE | **Human** | Review the PR |
-| 9 | Enforce | RULE | **Human** | `bryde-govern apply` |
+| 9 | Enforce | RULE | **Human** | `bryde-govern apply <org>` |
 | 10 | Compose modules in a root module | DEPLOY | Human or agent | Edit HCL |
 | 11 | Plan and apply the foundation | DEPLOY | **Human authorization** | `tofu plan` / `tofu apply` |
 | 12 | Bootstrap the cluster, if self-managed | DEPLOY | **Human** | `talosctl bootstrap` |
