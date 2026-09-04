@@ -201,12 +201,17 @@ The workflows cover the review loop:
 |---|---|---|
 | `validate` | pull request | Checks the YAML and formatting |
 | `plan-governance` | pull request touching `enforcement/**` | Shows what applying would change |
-| `apply-governance` | push to the default branch touching `enforcement/**` | Applies it, behind an environment approval |
+| `apply-governance` | push to the default branch touching `enforcement/**` | Applies it, with no human in the loop |
 | `audit-drift` | schedule, or on demand | Reports where reality has diverged from the rules |
 
 `plan-governance` and `apply-governance` drive the Terraform under `enforcement/terraform/`;
 `validate` checks it, and `audit-drift` queries GitHub directly. None of the four runs
 `bryde-govern`, so merging a rule does not run the CLI on your organization for you.
+
+`apply-governance` applies on merge, with no human in the loop. Its job names an environment
+called `production`, which carries no protection rules today, so nothing holds the run;
+required reviewers on that environment would. It is a different route to applying the same
+rules than the CLI, and it does not inherit the CLI's refusal to run without a terminal.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
 itself requires → merge → `bryde-govern apply ubqty-labs` puts it onto the connected things.
