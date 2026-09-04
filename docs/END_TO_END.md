@@ -69,7 +69,7 @@ boundary the model is built on gets blurred at the point it matters most.
 
 - `gh`, authenticated as yourself. Bootstrap's CLI reads GitHub through it and never
   asks for a token of its own.
-- `node` for the Bootstrap CLI.
+- `node` and `npm` for the Bootstrap and Governance CLIs.
 - `tofu` (OpenTofu) for Blueprints. **Not** the Terraform CLI — see the note in step 3.
 - A directory to hold your organization's checkouts, which is **not** inside
   `ecosystem-bootstrap`.
@@ -151,18 +151,63 @@ Blueprints.
 You define rules by editing YAML, and apply them with the CLI:
 
 ```text
-enforcement/controls/control-catalog.yaml     the controls themselves
-enforcement/controls/risk-levels.yaml         how severity is classified
-enforcement/controls/exceptions.yaml          what is exempt, and why
-enforcement/companies/<organization>.yaml     which controls apply to whom
-enforcement/github/                           GitHub organization enforcement
+enforcement/controls/control-catalog.yaml      the controls themselves
+enforcement/controls/repo-classification.yaml  which controls each class carries
+enforcement/controls/risk-levels.yaml          how severity is classified
+enforcement/controls/exceptions.yaml           what is exempt, and why
+enforcement/companies/<organization>.yaml      which controls apply to whom
+enforcement/github/                            GitHub organization enforcement
 ```
 
+The CLI reads the definitions next to itself: `npx` runs **main's** and cannot see your
+local edits, while `node bin/bryde-govern.mjs` from a clone runs **that checkout's**.
+
 ```bash
-npx github:atbrydeud/ecosystem-governance status   # what we believe. No network, no credential.
-npx github:atbrydeud/ecosystem-governance plan     # go and look. Read-only.
-npx github:atbrydeud/ecosystem-governance apply    # change things. Needs a human, always.
+npx github:atbrydeud/ecosystem-governance status  # what main declares, without a checkout.
 ```
+
+Clone `ecosystem-governance` and install its dependencies once:
+
+```bash
+gh repo clone atbrydeud/ecosystem-governance
+cd ecosystem-governance && npm ci
+```
+
+`plan` and `apply` take the organization to act on. Name it every time. Run `status` and
+`plan` from that clone to see the declaration you are about to write; run `apply` only
+once the loop below has reviewed, approved and merged it, so it acts on what was approved.
+
+```bash
+node bin/bryde-govern.mjs status            # what this checkout declares. No network, no credential.
+node bin/bryde-govern.mjs plan ubqty-labs   # go and look at ubqty-labs. Read-only.
+
+git checkout main && git pull               # apply reads the checkout, so make it the merged state
+node bin/bryde-govern.mjs apply ubqty-labs  # change ubqty-labs. Refuses without a terminal attached.
+```
+
+This is the **GitHub organization login**, not the declaration slug. The slug is derived
+from the login by lowercasing it, so it matches whenever the login is already lowercase,
+and differs when the login has capitals or when `bryde-connect init --org` named a
+different one. The login is what belongs here.
+
+`status` takes no organization: it is offline and reports every declared target, which
+costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
+useful sense — **an omitted organization means every target, not a sensible default.**
+Where a bare `apply` is not refused outright, the target filter passes everything and the
+run reaches every organization declared under `enforcement/companies/` rather than the one
+you meant. Name the organization and the question never arises.
+
+The login has to match the `organization:` field in a company file, which holds the login
+and not the slug. Those files ship with `{{ORG_A}}`-style placeholders, so
+`plan ubqty-labs` matches nothing and prints `no targets matched` until `ubqty-labs` is
+declared — the placeholder replaced, and its repositories classified against a class from
+`repo-classification.yaml`. Declaring it is the first edit of this step, not something
+someone else did for you.
+
+**`atbrydeud` is deliberately the last organization enforced, not the first.** A user
+cleanup comes before rules land on it, so enforcement is proven on the other organizations
+first — `ubqty-labs` is the working target. `atbrydeud` comes under the same controls once
+that cleanup is done. This is the standing order of work, not a note waiting to be cleared.
 
 Every rule and target gets exactly one outcome per run — `applied`, `already-conforming`,
 `not-yet-applicable`, `not-conforming`, `blocked` or `unknown` — and never none. **`unknown`
@@ -174,12 +219,20 @@ The workflows cover the review loop:
 | Workflow | Fires on | What it does |
 |---|---|---|
 | `validate` | pull request | Checks the YAML and formatting |
-| `plan-governance` | pull request | Shows what applying would change |
-| `apply-governance` | push to the default branch | Applies it |
-| `audit-drift` | schedule | Reports where reality has diverged from the rules |
+| `plan-governance` | pull request touching `enforcement/**` | Shows what applying would change |
+| `apply-governance` | push to the default branch touching `enforcement/**` | Applies it, with no human in the loop |
+| `audit-drift` | schedule, or on demand | Reports where reality has diverged from the rules |
+
+`plan-governance` and `apply-governance` drive the Terraform under `enforcement/terraform/`;
+`validate` checks it, and `audit-drift` queries GitHub directly. None of the four runs
+`bryde-govern`, so merging a rule does not run the CLI on your organization for you.
+
+`apply-governance` applies on merge. Its job names an environment called `production`,
+which carries no protection rules today, so nothing holds the run; required reviewers on
+that environment would.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
-itself requires → merge → `bryde-govern apply` puts it onto the connected things.
+itself requires → merge → `bryde-govern apply ubqty-labs` puts it onto the connected things.
 
 Read [`docs/APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
 before your first change. It is normative, and it defines the split between *defining* a
@@ -277,9 +330,9 @@ declarative and which a person performs.
 | 4 | Confirm what is real | CONNECT | **Human, always** | `bryde-connect verify` |
 | 5 | Authorize the declaration | CONNECT | **Human** | `bryde-connect apply` |
 | 6 | State the requirements | RULE | Human or agent | Edit YAML, open a PR |
-| 7 | See what would change | RULE | Human or agent | `bryde-govern plan` |
+| 7 | See what would change | RULE | Human or agent | `bryde-govern plan <org>` |
 | 8 | Read the plan, get approval | RULE | **Human** | Review the PR |
-| 9 | Enforce | RULE | **Human** | `bryde-govern apply` |
+| 9 | Enforce | RULE | **Human** | `bryde-govern apply <org>` |
 | 10 | Compose modules in a root module | DEPLOY | Human or agent | Edit HCL |
 | 11 | Plan and apply the foundation | DEPLOY | **Human authorization** | `tofu plan` / `tofu apply` |
 | 12 | Bootstrap the cluster, if self-managed | DEPLOY | **Human** | `talosctl bootstrap` |
