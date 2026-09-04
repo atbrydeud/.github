@@ -144,12 +144,14 @@ leave it running: anyone who can reach it administers it.
 
 ```bash
 helm uninstall trueforge --namespace trueforge
-kubectl delete namespace trueforge
+kubectl delete pvc --namespace trueforge --selector app.kubernetes.io/instance=trueforge
 ```
 
 Helm does not remove a subchart's PersistentVolumeClaims, so `helm uninstall` leaves the
-bundled Postgres and Redis volumes behind. Deleting the namespace — or those PVCs — is what
-actually reclaims the data.
+bundled Postgres and Redis volumes behind; the second command reclaims that data, matching
+only this release's own PVCs. Delete the namespace itself only if you created it for this
+install — `--create-namespace` adopts an existing one rather than failing, so it may hold
+more than this release.
 
 This sequence was run end to end on 2026-09-04 against `kind` v0.30.0 (Kubernetes v1.34.0)
 and `helm` v3.16.3: the release reached `deployed`, all three pods reached `1/1 Running`,
