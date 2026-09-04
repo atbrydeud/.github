@@ -1,28 +1,76 @@
 # End to End: Connect, Rule, Deploy
 
 How one organization goes from nothing to a running system, using the first three
-repositories in the stack:
-
-```text
-BOOTSTRAP        GOVERNANCE        BLUEPRINTS
- CONNECT    →       RULE      →      DEPLOY
-```
+repositories in the stack.
 
 [ECOSYSTEM.md](ECOSYSTEM.md) says what each layer *owns*. This document says what you
-actually *do*, in order, and which command does it. It stops where DEPLOY stops; EQUIP
-and OPERATE are named at the end but not covered.
+actually *do*, and which command does it. It stops where DEPLOY stops; EQUIP and OPERATE
+are named at the end but not covered.
 
-**The three layers do not work the same way, and that is the first thing to know.**
+## The shape is not a straight line
+
+The canonical order is `CONNECT → RULE → DEPLOY`, and that order is real: you cannot
+govern a tool that is not connected yet. But it describes when each layer *becomes
+active*, not a queue in which each finishes before the next begins.
+
+**Bootstrap and Blueprints are sequential. Governance is transversal.**
+
+```text
+                    ┌──────────────────────────────────────────────┐
+   BOOTSTRAP  ────▶  │              GOVERNANCE                      │
+    CONNECT          │  becomes enforceable once things are         │
+   (a milestone)     │  connected, then applies across everything   │
+                    └──────────────────────────────────────────────┘
+                              │              │              │
+                              ▼              ▼              ▼
+                         BLUEPRINTS       LIBRARY       OPERATIONS
+                           DEPLOY          EQUIP          OPERATE
+```
+
+Bootstrap is something you finish: the organization is connected, and you move on.
+Governance is not. It starts after Bootstrap because rules land on real accounts, and
+from that moment it cuts *across* every layer — the GitHub organization's rules, the
+subscription's access control, what a deployment is allowed to do, what authority an
+agent has at runtime. There is no point at which you are "done with governance" and
+proceed to deploying.
+
+So read the sequence below as: **connect once, turn governance on, and from then on every
+deployment happens inside it.**
+
+**The three layers do not work the same way, and that is the second thing to know.**
 
 | Layer | Repository | How you drive it | What it produces |
 |---|---|---|---|
 | CONNECT | `ecosystem-bootstrap` | A CLI you run on a laptop: `bryde-connect` | A declaration file — YAML describing the organization's accounts and credential *references* |
-| RULE | `ecosystem-governance` | No CLI. You edit YAML and open a pull request; workflows plan and apply | Requirements, and enforcement applied onto connected things |
+| RULE | `ecosystem-governance` | No CLI **yet** — see below. You edit YAML and open a pull request; workflows plan and apply | Requirements, and enforcement applied onto connected things |
 | DEPLOY | `ecosystem-blueprints` | No CLI. You call its modules from your own root module and run `tofu` | Running infrastructure and runtimes |
 
 Only Bootstrap has a CLI. Governance and Blueprints are driven by editing files and
-running standard tools. Anyone expecting three command-line tools will be looking for
-two that do not exist.
+running standard tools. Anyone expecting three command-line tools will be looking for two
+that do not exist — and in Governance's case, for one that arguably should.
+
+### The missing enforcement CLI
+
+Governance today applies its rules through Terraform, invoked from its own workflows. That
+works, and it is worth naming why it is nonetheless the wrong long-term shape.
+
+**Infrastructure-as-code tooling belongs to DEPLOY.** OpenTofu is Blueprints' instrument
+for building systems. When Governance reaches for the same class of tool to apply a GitHub
+branch-protection rule or an organization setting, the RULE layer takes on a dependency
+that belongs to the layer below it, and the boundary the model is built on gets blurred at
+exactly the point it matters most.
+
+The shape that matches the model is the one Bootstrap already has: **Governance owning an
+enforcement CLI of its own**, which reads the declaration, reads the control catalogue, and
+applies organization rules directly through each provider's API — reporting one recorded
+outcome per rule and target, as
+[`APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
+already requires of any applier.
+
+Until that exists, treat the Terraform in Governance's workflows as an implementation
+detail of the RULE layer rather than as a pattern to copy. **Do not conclude from it that
+Governance and Blueprints share a toolchain.** They do not, and Blueprints explicitly
+forbids the Terraform CLI in its own repository.
 
 ---
 
@@ -236,6 +284,16 @@ declarative and which a person performs.
 Steps 4, 5, 7, 10 and 11 need a person. That is deliberate in each case, and each layer
 documents why rather than leaving it implicit.
 
+**Steps 6 to 8 are the exception to the numbering.** They are the *first* pass through
+governance, not the only one. Every later change — a new control, a new organization
+brought under an existing control, a deployment that introduces something to govern —
+re-enters at step 6, while steps 9 to 12 continue independently. The drift audit runs on a
+schedule and can send you back to step 6 without anything having changed on your side.
+
+The one hard ordering constraint is that **step 6 cannot usefully precede step 1**: a
+control naming a provider nobody has connected has nothing to apply to. That is reported
+rather than treated as a failure, but it is also not progress.
+
 ---
 
 ## Where this stops
@@ -255,6 +313,11 @@ Operations.** A generic agent is Library; the process deciding when it runs is O
 
 **Governing something that is not connected.** Rules land on real accounts. Running RULE
 before CONNECT gives you a catalogue of controls with nothing to apply to.
+
+**Treating governance as a phase you complete.** It is the transversal layer: it turns on
+after Bootstrap and then applies across every deployment, every capability and every agent
+that follows. A team that "did governance" in week one and moved on has a control
+catalogue, not enforcement.
 
 **Putting a secret in Git.** No layer here stores a secret value. Bootstrap records a
 reference; Governance uses a credential without holding one; Blueprints accepts
