@@ -210,8 +210,7 @@ The workflows cover the review loop:
 
 `apply-governance` applies on merge, with no human in the loop. Its job names an environment
 called `production`, which carries no protection rules today, so nothing holds the run;
-required reviewers on that environment would. It is a different route to applying the same
-rules than the CLI, and it does not inherit the CLI's refusal to run without a terminal.
+required reviewers on that environment would.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
 itself requires → merge → `bryde-govern apply ubqty-labs` puts it onto the connected things.
