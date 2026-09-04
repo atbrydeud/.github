@@ -163,11 +163,19 @@ The CLI reads the definitions next to itself: `npx` runs **main's** and cannot s
 local edits, while `node bin/bryde-govern.mjs` from a clone runs **that checkout's**.
 
 ```bash
-npx github:atbrydeud/ecosystem-governance status  # what main declares. No checkout, no network, no credential.
+npx github:atbrydeud/ecosystem-governance status  # what main declares, without a checkout.
 ```
 
-`plan` and `apply` take the organization to act on. Name it every time, and run them from
-your clone of `ecosystem-governance` so they see the declaration you are about to write:
+Clone `ecosystem-governance` and install its dependencies once:
+
+```bash
+gh repo clone atbrydeud/ecosystem-governance
+cd ecosystem-governance && npm ci
+```
+
+`plan` and `apply` take the organization to act on. Name it every time. Run `status` and
+`plan` from that clone to see the declaration you are about to write; run `apply` only
+once the loop below has reviewed, approved and merged it, so it acts on what was approved.
 
 ```bash
 node bin/bryde-govern.mjs status            # what this checkout declares. No network, no credential.
