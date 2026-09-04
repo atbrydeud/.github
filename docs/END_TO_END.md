@@ -164,12 +164,13 @@ enforcement/github/                            GitHub organization enforcement
 ```bash
 npx github:atbrydeud/ecosystem-governance status            # what we believe. No network, no credential.
 npx github:atbrydeud/ecosystem-governance plan ubqty-labs   # go and look at ubqty-labs. Read-only.
-npx github:atbrydeud/ecosystem-governance apply ubqty-labs  # change ubqty-labs. Needs a human, always.
+npx github:atbrydeud/ecosystem-governance apply ubqty-labs  # change ubqty-labs. Refuses without a terminal attached.
 ```
 
-That argument is the **GitHub organization login**. The declaration slug from CONNECT
-defaults to a transcription of it, so the two are usually the same string — they differ
-only if `--org` named a different slug, and the login is still what belongs here.
+This is the **GitHub organization login**, not the declaration slug. The slug is derived
+from the login by lowercasing it, so it matches whenever the login is already lowercase,
+and differs when the login has capitals or when `--org` named a different one. The login
+is what belongs here.
 
 `status` takes no organization: it is offline and reports every declared target, which
 costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
@@ -208,9 +209,9 @@ The workflows cover the review loop:
 `validate` checks it, and `audit-drift` queries GitHub directly. None of the four runs
 `bryde-govern`, so merging a rule does not run the CLI on your organization for you.
 
-`apply-governance` applies on merge, with no human in the loop. Its job names an environment
-called `production`, which carries no protection rules today, so nothing holds the run;
-required reviewers on that environment would.
+`apply-governance` applies on merge. Its job names an environment called `production`,
+which carries no protection rules today, so nothing holds the run; required reviewers on
+that environment would.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
 itself requires → merge → `bryde-govern apply ubqty-labs` puts it onto the connected things.
