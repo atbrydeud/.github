@@ -180,13 +180,15 @@ once the loop below has reviewed, approved and merged it, so it acts on what was
 ```bash
 node bin/bryde-govern.mjs status            # what this checkout declares. No network, no credential.
 node bin/bryde-govern.mjs plan ubqty-labs   # go and look at ubqty-labs. Read-only.
+
+git checkout main && git pull               # apply reads the checkout, so make it the merged state
 node bin/bryde-govern.mjs apply ubqty-labs  # change ubqty-labs. Refuses without a terminal attached.
 ```
 
 This is the **GitHub organization login**, not the declaration slug. The slug is derived
 from the login by lowercasing it, so it matches whenever the login is already lowercase,
-and differs when the login has capitals or when `--org` named a different one. The login
-is what belongs here.
+and differs when the login has capitals or when `bryde-connect init --org` named a
+different one. The login is what belongs here.
 
 `status` takes no organization: it is offline and reports every declared target, which
 costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
