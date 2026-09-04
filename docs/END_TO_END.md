@@ -16,15 +16,19 @@ active*, not a queue in which each finishes before the next begins.
 **Bootstrap and Blueprints are sequential. Governance is transversal.**
 
 ```text
-                    ┌──────────────────────────────────────────────┐
-   BOOTSTRAP  ────▶  │              GOVERNANCE                      │
-    CONNECT          │  becomes enforceable once things are         │
-   (a milestone)     │  connected, then applies across everything   │
-                    └──────────────────────────────────────────────┘
-                              │              │              │
-                              ▼              ▼              ▼
-                         BLUEPRINTS       LIBRARY       OPERATIONS
-                           DEPLOY          EQUIP          OPERATE
+  BOOTSTRAP
+   CONNECT   ─────▶  the organization now exists and is connected
+  (finishes)                        │
+                                    ▼
+            ┌───────────────────────────────────────────────────┐
+            │                   GOVERNANCE                      │
+            │                      RULE                         │
+            │  enforceable from here on, and never "finished"   │
+            └───────────────────────────────────────────────────┘
+                  │                 │                 │
+                  ▼                 ▼                 ▼
+             BLUEPRINTS          LIBRARY          OPERATIONS
+               DEPLOY             EQUIP             OPERATE
 ```
 
 Bootstrap is something you finish: the organization is connected, and you move on.
