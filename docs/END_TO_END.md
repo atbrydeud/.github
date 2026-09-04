@@ -159,12 +159,20 @@ enforcement/companies/<organization>.yaml      which controls apply to whom
 enforcement/github/                            GitHub organization enforcement
 ```
 
-`plan` and `apply` take the organization to act on. Name it every time:
+The CLI reads the definitions next to itself: `npx` runs **main's** and cannot see your
+local edits, while `node bin/bryde-govern.mjs` from a clone runs **that checkout's**.
 
 ```bash
-npx github:atbrydeud/ecosystem-governance status            # what we believe. No network, no credential.
-npx github:atbrydeud/ecosystem-governance plan ubqty-labs   # go and look at ubqty-labs. Read-only.
-npx github:atbrydeud/ecosystem-governance apply ubqty-labs  # change ubqty-labs. Refuses without a terminal attached.
+npx github:atbrydeud/ecosystem-governance status  # what main declares. No checkout, no network, no credential.
+```
+
+`plan` and `apply` take the organization to act on. Name it every time, and run them from
+your clone of `ecosystem-governance` so they see the declaration you are about to write:
+
+```bash
+node bin/bryde-govern.mjs status            # what this checkout declares. No network, no credential.
+node bin/bryde-govern.mjs plan ubqty-labs   # go and look at ubqty-labs. Read-only.
+node bin/bryde-govern.mjs apply ubqty-labs  # change ubqty-labs. Refuses without a terminal attached.
 ```
 
 This is the **GitHub organization login**, not the declaration slug. The slug is derived
