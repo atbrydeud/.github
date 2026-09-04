@@ -46,35 +46,22 @@ deployment happens inside it.**
 | Layer | Repository | How you drive it | What it produces |
 |---|---|---|---|
 | CONNECT | `ecosystem-bootstrap` | A CLI you run on a laptop: `bryde-connect` | A declaration file — YAML describing the organization's accounts and credential *references* |
-| RULE | `ecosystem-governance` | No CLI **yet** — see below. You edit YAML and open a pull request; workflows plan and apply | Requirements, and enforcement applied onto connected things |
+| RULE | `ecosystem-governance` | A CLI: `bryde-govern`. Rules are edited as YAML and applied by it | Requirements, and enforcement applied onto connected things |
 | DEPLOY | `ecosystem-blueprints` | No CLI. You call its modules from your own root module and run `tofu` | Running infrastructure and runtimes |
 
-Only Bootstrap has a CLI. Governance and Blueprints are driven by editing files and
-running standard tools. Anyone expecting three command-line tools will be looking for two
-that do not exist — and in Governance's case, for one that arguably should.
+Bootstrap and Governance each have a CLI, and the two deliberately share a shape:
+`status` reads the record with no network and no credential, a second mode goes and looks,
+and the third changes things and refuses to run without a person. Learn it once.
 
-### The missing enforcement CLI
+Blueprints has none, and that is not an omission — it is a library of modules you call
+from your own configuration. The tool you run there is `tofu`, in your root module,
+against your subscription.
 
-Governance today applies its rules through Terraform, invoked from its own workflows. That
-works, and it is worth naming why it is nonetheless the wrong long-term shape.
-
-**Infrastructure-as-code tooling belongs to DEPLOY.** OpenTofu is Blueprints' instrument
-for building systems. When Governance reaches for the same class of tool to apply a GitHub
-branch-protection rule or an organization setting, the RULE layer takes on a dependency
-that belongs to the layer below it, and the boundary the model is built on gets blurred at
-exactly the point it matters most.
-
-The shape that matches the model is the one Bootstrap already has: **Governance owning an
-enforcement CLI of its own**, which reads the declaration, reads the control catalogue, and
-applies organization rules directly through each provider's API — reporting one recorded
-outcome per rule and target, as
-[`APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
-already requires of any applier.
-
-Until that exists, treat the Terraform in Governance's workflows as an implementation
-detail of the RULE layer rather than as a pattern to copy. **Do not conclude from it that
-Governance and Blueprints share a toolchain.** They do not, and Blueprints explicitly
-forbids the Terraform CLI in its own repository.
+**Do not conclude that Governance and Blueprints share a toolchain.** They do not.
+Blueprints forbids the Terraform CLI in its own repository, and Governance's enforcement
+goes through its own CLI and each provider's API rather than through infrastructure-as-code.
+Infrastructure-as-code tooling belongs to DEPLOY; when the RULE layer borrows it, the
+boundary the model is built on gets blurred at the point it matters most.
 
 ---
 
@@ -150,7 +137,7 @@ relationships and credential references. Governance and Blueprints both read it.
 
 ## Step 2 — RULE: state what must be true, and enforce it
 
-**Repository:** `ecosystem-governance`. **Tool:** none — pull requests and workflows.
+**Repository:** `ecosystem-governance`. **Tool:** `bryde-govern`.
 
 Governance comes second because rules are enforced *onto connected things*. There is no
 access control to set on a subscription that does not exist yet. Its position in the
@@ -161,7 +148,7 @@ Governance defines **requirements**, not the mechanism that satisfies them. "Dat
 traffic must be encrypted" is Governance. The input that turns encryption on is
 Blueprints.
 
-You work here by editing YAML and opening a pull request:
+You define rules by editing YAML, and apply them with the CLI:
 
 ```text
 enforcement/controls/control-catalog.yaml     the controls themselves
@@ -171,7 +158,18 @@ enforcement/companies/<organization>.yaml     which controls apply to whom
 enforcement/github/                           GitHub organization enforcement
 ```
 
-The workflows do the rest:
+```bash
+npx github:atbrydeud/ecosystem-governance status   # what we believe. No network, no credential.
+npx github:atbrydeud/ecosystem-governance plan     # go and look. Read-only.
+npx github:atbrydeud/ecosystem-governance apply    # change things. Needs a human, always.
+```
+
+Every rule and target gets exactly one outcome per run — `applied`, `already-conforming`,
+`not-yet-applicable`, `not-conforming`, `blocked` or `unknown` — and never none. **`unknown`
+is a failure, not a shrug**: a run that could not observe a target says so and exits
+non-zero rather than inferring a pass.
+
+The workflows cover the review loop:
 
 | Workflow | Fires on | What it does |
 |---|---|---|
@@ -180,17 +178,18 @@ The workflows do the rest:
 | `apply-governance` | push to the default branch | Applies it |
 | `audit-drift` | schedule | Reports where reality has diverged from the rules |
 
-So the loop is: edit YAML → open a PR → read the plan on the PR → get the human approval
-Governance itself requires → merge, and the apply workflow runs.
+So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
+itself requires → merge → `bryde-govern apply` puts it onto the connected things.
 
 Read [`docs/APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
 before your first change. It is normative, and it defines the split between *defining* a
 rule and *applying* one — including which layer applies which class of rule, and how
 Governance uses a credential without ever holding one.
 
-**A rule with no target is not a failure.** If a control names something Bootstrap has
-not connected yet, it simply has nothing to apply to. That is expected and reported, not
-an error.
+**A rule with no target is not a failure.** If a control names something Bootstrap has not
+connected yet, it has nothing to apply to. The CLI reports that as `not-yet-applicable`,
+naming the predicate and the layer that supplies it — expected and recorded, not an error.
+Run `status` on a fresh checkout and that is exactly what you will see.
 
 **Output of this step:** requirements that are enforceable, and enforcement applied to
 what Bootstrap connected.
@@ -278,25 +277,27 @@ declarative and which a person performs.
 | 4 | Confirm what is real | CONNECT | **Human, always** | `bryde-connect verify` |
 | 5 | Authorize the declaration | CONNECT | **Human** | `bryde-connect apply` |
 | 6 | State the requirements | RULE | Human or agent | Edit YAML, open a PR |
-| 7 | Read the plan, get approval | RULE | **Human** | Review the PR |
-| 8 | Enforce | RULE | Workflow | Merge; `apply-governance` runs |
-| 9 | Compose modules in a root module | DEPLOY | Human or agent | Edit HCL |
-| 10 | Plan and apply the foundation | DEPLOY | **Human authorization** | `tofu plan` / `tofu apply` |
-| 11 | Bootstrap the cluster, if self-managed | DEPLOY | **Human** | `talosctl bootstrap` |
-| 12 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` in the chart layer |
+| 7 | See what would change | RULE | Human or agent | `bryde-govern plan` |
+| 8 | Read the plan, get approval | RULE | **Human** | Review the PR |
+| 9 | Enforce | RULE | **Human** | `bryde-govern apply` |
+| 10 | Compose modules in a root module | DEPLOY | Human or agent | Edit HCL |
+| 11 | Plan and apply the foundation | DEPLOY | **Human authorization** | `tofu plan` / `tofu apply` |
+| 12 | Bootstrap the cluster, if self-managed | DEPLOY | **Human** | `talosctl bootstrap` |
+| 13 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` in the chart layer |
 
-Steps 4, 5, 7, 10 and 11 need a person. That is deliberate in each case, and each layer
+Steps 4, 5, 8, 9, 11 and 12 need a person. That is deliberate in each case, and each layer
 documents why rather than leaving it implicit.
 
-**Steps 6 to 8 are the exception to the numbering.** They are the *first* pass through
+**Steps 6 to 9 are the exception to the numbering.** They are the *first* pass through
 governance, not the only one. Every later change — a new control, a new organization
 brought under an existing control, a deployment that introduces something to govern —
-re-enters at step 6, while steps 9 to 12 continue independently. The drift audit runs on a
+re-enters at step 6, while steps 10 to 13 continue independently. The drift audit runs on a
 schedule and can send you back to step 6 without anything having changed on your side.
 
 The one hard ordering constraint is that **step 6 cannot usefully precede step 1**: a
-control naming a provider nobody has connected has nothing to apply to. That is reported
-rather than treated as a failure, but it is also not progress.
+control naming a provider nobody has connected has nothing to apply to. `bryde-govern
+status` reports that as `not-yet-applicable` and names the layer that supplies the missing
+precondition — recorded rather than treated as a failure, but not progress either.
 
 ---
 
