@@ -69,7 +69,7 @@ boundary the model is built on gets blurred at the point it matters most.
 
 - `gh`, authenticated as yourself. Bootstrap's CLI reads GitHub through it and never
   asks for a token of its own.
-- `node` for the Bootstrap CLI.
+- `node` and `npm` for the Bootstrap and Governance CLIs.
 - `tofu` (OpenTofu) for Blueprints. **Not** the Terraform CLI — see the note in step 3.
 - A directory to hold your organization's checkouts, which is **not** inside
   `ecosystem-bootstrap`.
