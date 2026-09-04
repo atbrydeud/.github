@@ -162,10 +162,14 @@ enforcement/github/                            GitHub organization enforcement
 `plan` and `apply` take the organization to act on. Name it every time:
 
 ```bash
-npx github:atbrydeud/ecosystem-governance status       # what we believe. No network, no credential.
-npx github:atbrydeud/ecosystem-governance plan ubqty   # go and look at ubqty. Read-only.
-npx github:atbrydeud/ecosystem-governance apply ubqty  # change ubqty. Needs a human, always.
+npx github:atbrydeud/ecosystem-governance status            # what we believe. No network, no credential.
+npx github:atbrydeud/ecosystem-governance plan ubqty-labs   # go and look at ubqty-labs. Read-only.
+npx github:atbrydeud/ecosystem-governance apply ubqty-labs  # change ubqty-labs. Needs a human, always.
 ```
+
+That argument is the **GitHub organization login**, not the declaration slug you carried
+over from CONNECT. For this company the two differ: `ubqty-labs` is the login, `ubqty` is
+the slug.
 
 `status` takes no organization: it is offline and reports every declared target, which
 costs nothing. `plan` and `apply` act on one, and the argument is not optional in any
@@ -174,16 +178,17 @@ Where a bare `apply` is not refused outright, the target filter passes everythin
 run reaches every organization declared under `enforcement/companies/` rather than the one
 you meant. Name the organization and the question never arises.
 
-The name has to match the `organization:` field in a company file. Those files ship with
-`{{ORG_A}}`-style placeholders, so `plan ubqty` matches nothing and prints
-`no targets matched` until `ubqty` is declared — the placeholder replaced, and its
-repositories classified against a class from `repo-classification.yaml`. Declaring it is
-the first edit of this step, not something someone else did for you.
+The login has to match the `organization:` field in a company file, which holds the login
+and not the slug. Those files ship with `{{ORG_A}}`-style placeholders, so
+`plan ubqty-labs` matches nothing and prints `no targets matched` until `ubqty-labs` is
+declared — the placeholder replaced, and its repositories classified against a class from
+`repo-classification.yaml`. Declaring it is the first edit of this step, not something
+someone else did for you.
 
 **`atbrydeud` is deliberately the last organization enforced, not the first.** A user
 cleanup comes before rules land on it, so enforcement is proven on the other organizations
-first — `ubqty` is the working target. `atbrydeud` comes under the same controls once that
-cleanup is done. This is the standing order of work, not a note waiting to be cleared.
+first — `ubqty-labs` is the working target. `atbrydeud` comes under the same controls once
+that cleanup is done. This is the standing order of work, not a note waiting to be cleared.
 
 Every rule and target gets exactly one outcome per run — `applied`, `already-conforming`,
 `not-yet-applicable`, `not-conforming`, `blocked` or `unknown` — and never none. **`unknown`
@@ -199,11 +204,12 @@ The workflows cover the review loop:
 | `apply-governance` | push to the default branch touching `enforcement/**` | Applies it, behind an environment approval |
 | `audit-drift` | schedule, or on demand | Reports where reality has diverged from the rules |
 
-Those workflows drive the Terraform under `enforcement/terraform/`, not `bryde-govern`.
-Merging a rule does not run the CLI on your organization for you.
+`plan-governance` and `apply-governance` drive the Terraform under `enforcement/terraform/`;
+`validate` checks it, and `audit-drift` queries GitHub directly. None of the four runs
+`bryde-govern`, so merging a rule does not run the CLI on your organization for you.
 
 So the loop is: edit YAML → open a PR → read the plan → get the human approval Governance
-itself requires → merge → `bryde-govern apply ubqty` puts it onto the connected things.
+itself requires → merge → `bryde-govern apply ubqty-labs` puts it onto the connected things.
 
 Read [`docs/APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md)
 before your first change. It is normative, and it defines the split between *defining* a
