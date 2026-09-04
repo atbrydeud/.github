@@ -109,6 +109,7 @@ and does not replace authoritative policy in `ecosystem-governance`.
 | [`profile/README.md`](profile/README.md) | Public organization landing page |
 | [`docs/ECOSYSTEM.md`](docs/ECOSYSTEM.md) | Canonical ownership model for the seven repositories |
 | [`docs/PROJECT_MAP.md`](docs/PROJECT_MAP.md) | “I need to change X — where does it belong?” |
+| [`docs/END_TO_END.md`](docs/END_TO_END.md) | Step by step: connecting, governing and deploying one organization |
 | [`docs/ARCHITECTURE_PRINCIPLES.md`](docs/ARCHITECTURE_PRINCIPLES.md) | Design principles behind the model |
 | [`docs/GETTING_STARTED.md`](docs/GETTING_STARTED.md) | Contributor and agent orientation |
 | [`docs/MIGRATION_FOLLOW_UPS.md`](docs/MIGRATION_FOLLOW_UPS.md) | Known misplaced content requiring separate migration |

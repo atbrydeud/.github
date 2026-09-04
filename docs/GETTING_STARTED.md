@@ -7,6 +7,8 @@ Orientation for people and agents arriving at At Bryde Ud.
 1. [ECOSYSTEM.md](ECOSYSTEM.md) — the seven repositories and canonical ownership model.
 2. [PROJECT_MAP.md](PROJECT_MAP.md) — where a proposed change belongs.
 3. [ARCHITECTURE_PRINCIPLES.md](ARCHITECTURE_PRINCIPLES.md) — why the model is shaped this way.
+   Then [END_TO_END.md](END_TO_END.md) when you need the sequence rather than the model:
+   what you actually run, in order, to connect, govern and deploy one organization.
 4. [../CONTRIBUTING.md](../CONTRIBUTING.md) and [../SECURITY.md](../SECURITY.md).
 5. The target repository's `README.md`, root `AGENTS.md`, contribution guide,
    roadmap and relevant architecture docs.
