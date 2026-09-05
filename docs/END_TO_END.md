@@ -425,13 +425,16 @@ module "baseline" {
   service_accounts = {
     runtime = {
       labels      = { "azure.workload.identity/use" = "true" }
-      annotations = { "azure.workload.identity/client-id" = module.identity_workload.client_ids["runtime"] }
+      annotations = { "azure.workload.identity/client-id" = var.workload_identity_client_id }
     }
   }
 
   network = { default_deny = ["Ingress", "Egress"] }
 }
 ```
+
+The value of `var.workload_identity_client_id` comes from the infrastructure layer's
+`client_ids` output, in `modules/identity`.
 
 You call it exactly the way you call a module — the same five files, the same contract, the
 same CI checks — and you run the same `tofu` commands below, in your cluster root module.
@@ -569,10 +572,11 @@ planning real work plausibly assumes is already there. None has a directory behi
 | `patterns/gitops-argocd` | The delivery substrate that reconciles workload manifests onto the cluster | Nothing yet — it is named, not depended on |
 
 Those two absences reach even the patterns that *have* landed. `plane-runtime` renders an
-Ingress and names the Secrets its pods read; it creates neither. An Ingress with no
-controller behind it routes nothing, and a pod whose named Secret does not exist sits in
-`CreateContainerConfigError` — the pattern's own README says so. Supplying them by hand is
-a legitimate first deployment; assuming Blueprints supplies them is not.
+Ingress and names the Secrets its pods read; it supplies neither the controller behind that
+Ingress nor the Secrets themselves. An Ingress with no controller behind it routes nothing,
+and a pod whose named Secret does not exist sits in `CreateContainerConfigError` — the
+pattern's own README says so. Supplying them by hand is a legitimate first deployment;
+assuming Blueprints supplies them is not.
 
 `trueforge-runtime` requires the first two, so the governed TrueForge path is not
 deliverable today by either route — which is exactly what the
