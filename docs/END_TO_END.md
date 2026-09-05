@@ -589,12 +589,12 @@ every runtime pattern in the graph except `plane-runtime`.
 Every other system in this stack is supplied by exactly one layer. The work-management
 workspace has two sources, and both are legitimate:
 
-- **Registered at CONNECT — the hosted workspace.** Bootstrap's provider catalogue carries
-  a `plane` provider under `work-management`, `assisted`, whose human steps are creating the
+- **A workspace someone signs up for.** Bootstrap's provider catalogue carries a `plane`
+  provider under `work-management`, `assisted`, whose human steps are creating the
   workspace, accepting its terms and issuing an administrative API key recorded as a
   reference. Terms acceptance is a legal act by a named person, which is why it is
   `assisted` and why its automation status is `none`.
-- **Stood up by DEPLOY — an instance you run.**
+- **An instance DEPLOY stands up.**
   [`patterns/plane-runtime`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/plane-runtime)
   deploys Plane as a managed Helm release at a pinned chart and application version: seven
   workloads from five images, five HTTP surfaces served on one hostname by path, four data
@@ -603,6 +603,11 @@ workspace has two sources, and both are legitimate:
   Secret; no input takes a value. What was read from Plane's published chart, and when, is
   recorded in
   [`docs/PLANE_DEPLOYMENT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/PLANE_DEPLOYMENT.md).
+
+Those are two sources of the **instance**, not two routes through the stack. Bootstrap owns
+the connection and its administrative credential reference for a Plane instance however that
+instance was obtained — self-hosted by DEPLOY or otherwise — and that credential reference
+is what Operations reads. So the CONNECT entry is not something the self-hosted route skips.
 
 **Operations does not care which.** Its business is the configuration *inside* the
 workspace — projects, work-item types, states, labels, properties and the workflows that
