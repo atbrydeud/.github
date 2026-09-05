@@ -35,7 +35,6 @@ consistent use of **CONNECT → RULE → DEPLOY → EQUIP → OPERATE**, and ali
 between the profile, ecosystem map, project map, support routing and templates.
 Review the full diff and open a scoped pull request with no runtime impact.
 
-
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.

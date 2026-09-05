@@ -87,9 +87,9 @@ It owns reusable infrastructure modules and deployment patterns: Azure/AKS,
 networking/OpenZiti, Postgres, Redis, storage, observability, backup/DR
 infrastructure, Argo CD/GitOps, CI runners, gateways and workload identity.
 
-It also owns deployment of shared runtimes such as n8n, Eve, TrueForge and
-AGNTCY. It consumes the accounts, identities and credential references
-established by Bootstrap.
+It also owns deployment of shared runtimes such as n8n, Eve, TrueForge,
+AGNTCY and Plane. It consumes the accounts, identities and credential
+references established by Bootstrap.
 
 ### 4. ecosystem-library — EQUIP
 

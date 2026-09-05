@@ -44,6 +44,7 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 | TrueForge deployment | `ecosystem-blueprints` |
 | AGNTCY deployment | `ecosystem-blueprints` |
 | n8n runtime deployment | `ecosystem-blueprints` |
+| Plane runtime deployment | `ecosystem-blueprints` |
 | Reusable agent definition | `ecosystem-library` |
 | Reusable skill or prompt/instruction bundle | `ecosystem-library` |
 | MCP server or connector, including GitHub/Plane MCP | `ecosystem-library` |
