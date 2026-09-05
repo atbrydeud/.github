@@ -44,6 +44,7 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 | TrueForge deployment | `ecosystem-blueprints` |
 | AGNTCY deployment | `ecosystem-blueprints` |
 | n8n runtime deployment | `ecosystem-blueprints` |
+| Plane runtime deployment | `ecosystem-blueprints` |
 | Reusable agent definition | `ecosystem-library` |
 | Reusable skill or prompt/instruction bundle | `ecosystem-library` |
 | MCP server or connector, including GitHub/Plane MCP | `ecosystem-library` |
@@ -76,6 +77,17 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 
 - Blueprints deploys n8n.
 - Operations owns the n8n flow and the business process it automates.
+
+### Plane: connection vs runtime vs configuration
+
+- Bootstrap owns the connection to a Plane instance and its administrative
+  credential reference, however that instance was obtained.
+- Blueprints deploys the Plane instance itself (`patterns/plane-runtime`).
+- Operations owns what is inside it — projects, work-item types, states, labels
+  and workflows.
+
+Why Plane has two valid sources, and which layer supplies which part:
+[END_TO_END.md](END_TO_END.md#plane-is-the-one-thing-with-two-valid-sources).
 
 ### Governance vs every mechanism
 

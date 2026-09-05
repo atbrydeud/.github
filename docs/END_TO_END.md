@@ -50,15 +50,15 @@ deployment happens inside it.**
 |---|---|---|---|
 | CONNECT | `ecosystem-bootstrap` | A CLI you run on a laptop: `bryde-connect` | A declaration file — YAML describing the organization's accounts and credential *references* |
 | RULE | `ecosystem-governance` | A CLI: `bryde-govern`. Rules are edited as YAML and applied by it | Requirements, and enforcement applied onto connected things |
-| DEPLOY | `ecosystem-blueprints` | No CLI. You call its modules from your own root module and run `tofu` | Running infrastructure and runtimes |
+| DEPLOY | `ecosystem-blueprints` | No CLI. You call its modules and patterns from your own root modules and run `tofu` | Running infrastructure and runtimes |
 
 Bootstrap and Governance each have a CLI, and the two deliberately share a shape:
 `status` reads the record with no network and no credential, a second mode goes and looks,
 and the third changes things and refuses to run without a person. Learn it once.
 
-Blueprints has none, and that is not an omission — it is a library of modules you call
-from your own configuration. The tool you run there is `tofu`, in your root module,
-against your subscription.
+Blueprints has none, and that is not an omission — it is a library of modules *and
+patterns* you call from your own configuration. The tool you run there is `tofu`, in your
+root module, against your subscription.
 
 **Do not conclude that Governance and Blueprints share a toolchain.** They do not.
 Blueprints forbids the Terraform CLI in its own repository, and Governance's enforcement
@@ -365,15 +365,90 @@ what Bootstrap connected.
 
 **Repository:** `ecosystem-blueprints`. **Tool:** `tofu`.
 
-Blueprints is a library of reusable modules. **Nothing in it applies anything.** There is
-no `apply` in any of its workflows and no environment it could target. You consume it
-from your own root module — the one that holds your organization's values and your state
-backend — and you run `tofu` there.
+Blueprints is a library of reusable modules and patterns. **Nothing in it applies
+anything.** There is no `apply` in any of its workflows and no environment it could target.
+You consume it from your own root module — the one that holds your organization's values
+and your state backend — and you run `tofu` there.
 
 > **OpenTofu, not Terraform.** Blueprints requires the `tofu` CLI. Note that
 > Governance's own workflows currently invoke `terraform`; the two repositories differ
 > here, and if you are moving between them, use each repository's own documented command
 > rather than assuming they match.
+
+### Modules and patterns are not the same thing
+
+Blueprints ships both, and the boundary between them is a **layer**, not a size. A module
+builds the substrate — resource groups, the network, managed identities, the cluster
+itself — everything *below* the Kubernetes API. A pattern is what runs on the cluster, *at
+or above* that API. That is the repository's own definition, in
+[`patterns/README.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/README.md) and in the `kind` enum of
+[`schemas/catalogue.schema.json`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/schemas/catalogue.schema.json); it is not a
+statement about size, and a pattern is held to the same five-file contract a module is.
+
+It is why the foundation modules declare the `azurerm` provider while the patterns declare
+only `kubernetes`, and `helm` where a chart is involved. Neither pattern on `main` declares
+a cloud provider at all: a baseline only a cloud can satisfy is a baseline the next
+substrate cannot have.
+
+It shows up in your own configuration as **two root modules and two states**. The
+infrastructure layer takes `subscription_id` and no cluster connection; the cluster layer
+takes the cluster connection and configures no Azure provider at all — so a workload
+rollback cannot plan a change to a virtual machine. Blueprints'
+[`examples/README.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/examples/README.md)
+documents that split.
+
+One thing on `main` reads against the rule: `modules/agntcy/*` install Helm charts and
+declare `kubernetes` and `helm` rather than a cloud provider. By the definition above they
+are cluster-layer work sitting under `modules/`, and
+[`examples/README.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/examples/README.md)
+places their examples in the cluster layer accordingly. The catalogue's composed
+`agntcy-runtime` is a pattern, and it is not built.
+
+### Every runtime starts from the workload baseline
+
+[`patterns/workload-baseline`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/workload-baseline)
+establishes the namespace and its Pod Security Admission level, a service account bound to a
+workload identity by annotation, NetworkPolicy that isolates the namespace and names what it
+may reach, and container defaults with an optional ceiling. Every runtime in
+[`catalogue/systems.yaml`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/catalogue/systems.yaml)
+names it in `requires`, which is why it landed first. **One instance is one namespace**, so a
+change to one workload's baseline cannot plan a change to another's.
+
+It installs nothing. It is what a runtime lands on.
+
+```hcl
+module "baseline" {
+  source = "github.com/atbrydeud/ecosystem-blueprints//patterns/workload-baseline?ref=<version>"
+
+  namespace = { name = "agent-runtime" }
+
+  service_accounts = {
+    runtime = {
+      labels      = { "azure.workload.identity/use" = "true" }
+      annotations = { "azure.workload.identity/client-id" = var.workload_identity_client_id }
+    }
+  }
+
+  network = { default_deny = ["Ingress", "Egress"] }
+}
+```
+
+The value of `var.workload_identity_client_id` comes from the infrastructure layer's
+`client_ids` output, in `modules/identity`.
+
+You call it exactly the way you call a module — the same five files, the same contract, the
+same CI checks — and you run the same `tofu` commands below, in your cluster root module.
+
+**The NetworkPolicy objects it creates are only a boundary where the CNI enforces them.**
+`modules/aks` defaults `network_policy` to Calico, so a cluster built from it enforces;
+on Talos the CNI is a cluster decision. The pattern reports what it created and makes no
+claim about what is enforced — its README has the probe that answers it.
+
+The second pattern on `main` is
+[`patterns/plane-runtime`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/plane-runtime),
+which lands the Plane work-management runtime on top of that baseline. It is covered
+[below](#plane-is-the-one-thing-with-two-valid-sources), because Plane is the one system in
+this stack that two different layers can legitimately supply.
 
 ### 3a. Point a root module at it
 
@@ -402,11 +477,11 @@ tofu apply                # your authorization, in your root module, against you
 ```
 
 Blueprints' own repository checks — the ones its contributors run — are different, and
-apply to changing the modules rather than using them:
+apply to changing the modules and patterns rather than using them:
 
 ```bash
 tofu fmt -check -recursive .
-tofu init -backend=false && tofu validate     # per module and example directory
+tofu init -backend=false && tofu validate     # per module, pattern and example directory
 tflint --chdir=<dir> --config="$PWD/.tflint.hcl"
 trivy config --config trivy.yaml .
 trivy fs --scanners secret .
@@ -445,10 +520,11 @@ declarative and which a person performs.
 | 7 | See what would change | RULE | Human or agent | `bryde-govern plan <org>` |
 | 8 | Read the plan, get approval | RULE | **Human** | Review the PR |
 | 9 | Enforce | RULE | **Human** | `bryde-govern apply <org>` |
-| 10 | Compose modules in a root module | DEPLOY | Human or agent | Edit HCL |
+| 10 | Compose modules and patterns in your root modules | DEPLOY | Human or agent | Edit HCL |
 | 11 | Plan and apply the foundation | DEPLOY | **Human authorization** | `tofu plan` / `tofu apply` |
 | 12 | Bootstrap the cluster, if self-managed | DEPLOY | **Human** | `talosctl bootstrap` |
-| 13 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` in the chart layer |
+| 13 | Establish the workload baseline | DEPLOY | Human or agent | `tofu apply` in the cluster root module |
+| 14 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` in the cluster root module |
 
 Steps 4, 5, 8, 9, 11 and 12 need a person. That is deliberate in each case, and each layer
 documents why rather than leaving it implicit.
@@ -456,7 +532,7 @@ documents why rather than leaving it implicit.
 **Steps 6 to 9 are the exception to the numbering.** They are the *first* pass through
 governance, not the only one. Every later change — a new control, a new organization
 brought under an existing control, a deployment that introduces something to govern —
-re-enters at step 6, while steps 10 to 13 continue independently. The drift audit runs on a
+re-enters at step 6, while steps 10 to 14 continue independently. The drift audit runs on a
 schedule and can send you back to step 6 without anything having changed on your side.
 
 The one hard ordering constraint is that **step 6 cannot usefully precede step 1**: a
@@ -476,6 +552,80 @@ DEPLOY leaves you with running systems and nothing running *on* them.
 
 The recurring distinction, in one line: **the n8n runtime is Blueprints; the n8n flow is
 Operations.** A generic agent is Library; the process deciding when it runs is Operations.
+
+### It also stops short of things the deploy graph names
+
+[`catalogue/systems.yaml`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/catalogue/systems.yaml)
+is a dependency graph, not an inventory — its own header says availability is read from the
+repository at run time and never recorded there. So plan against the repository, not the
+graph. What is in the repository today is the Azure foundation (`landing-zone`,
+`networking`, `identity`, `aks`, `talos`), the AGNTCY component modules, and two
+patterns — `workload-baseline` and `plane-runtime`.
+
+Three of the patterns it names are worth calling out, because each is a thing a reader
+planning real work plausibly assumes is already there. None has a directory behind it:
+
+| Named in the graph | Would provide | Who asks for it |
+|---|---|---|
+| `patterns/ingress-controller` | The controller that makes an Ingress object mean something | Every runtime pattern in the graph, `plane-runtime` included |
+| `patterns/secrets-from-vault` | The workload-identity path from a pod to an approved secret store | `trueforge-runtime`, `eve-runtime`, `n8n-runtime`, `plane-runtime` |
+| `patterns/gitops-argocd` | The delivery substrate that reconciles workload manifests onto the cluster | Nothing yet — it is named, not depended on |
+
+Those two absences reach even the patterns that *have* landed. `plane-runtime` renders an
+Ingress and names the Secrets its pods read; it supplies neither the controller behind that
+Ingress nor the Secrets themselves. An Ingress with no controller behind it routes nothing,
+and a pod whose named Secret does not exist sits in `CreateContainerConfigError` — the
+pattern's own README says so. Supplying them by hand is a legitimate first deployment;
+assuming Blueprints supplies them is not.
+
+`trueforge-runtime` requires the first two, so the governed TrueForge path is not
+deliverable today by either route — which is exactly what the
+[shortcut](#shortcut--a-running-trueforge-today) is honest about. The same is true of the
+`key-vault`, `postgres`, `redis`, `container-registry` and `observability` modules and of
+every runtime pattern in the graph except `plane-runtime`.
+
+### Plane is the one thing with two valid sources
+
+Every other system in this stack is supplied by exactly one layer. The work-management
+workspace has two sources, and both are legitimate:
+
+- **A workspace someone signs up for.** Bootstrap's provider catalogue carries a `plane`
+  provider under `work-management`, `assisted`, whose human steps are creating the
+  workspace, accepting its terms and issuing an administrative API key recorded as a
+  reference. Terms acceptance is a legal act by a named person, which is why it is
+  `assisted` and why its automation status is `none`.
+- **An instance DEPLOY stands up.**
+  [`patterns/plane-runtime`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/plane-runtime)
+  deploys Plane as a managed Helm release at a pinned chart and application version: seven
+  workloads from five images, five HTTP surfaces served on one hostname by path, four data
+  services either bundled in the cluster or external, an Ingress, and a documented upgrade
+  and rollback path. Every credential it needs arrives as the **name** of a Kubernetes
+  Secret; no input takes a value. What was read from Plane's published chart, and when, is
+  recorded in
+  [`docs/PLANE_DEPLOYMENT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/PLANE_DEPLOYMENT.md).
+
+Those are two sources of the **instance**, not two routes through the stack. Bootstrap owns
+the connection and its administrative credential reference for a Plane instance however that
+instance was obtained — self-hosted by DEPLOY or otherwise — and that credential reference
+is what Operations reads. So the CONNECT entry is not something the self-hosted route skips.
+
+**Operations does not care which.** Its business is the configuration *inside* the
+workspace — projects, work-item types, states, labels, properties and the workflows that
+move a work item between them — applied through Plane Compose against whichever instance the
+organization has, and `ecosystem-operations` already holds that structure under `plane/`.
+Both sides state the same boundary: Bootstrap's catalogue says configuration-as-code belongs
+to Operations, and `plane-runtime`'s README says it deploys the runtime and configures
+nothing in it.
+
+Two things are worth knowing before choosing:
+
+- **Plane CE has no chart value for authentication.** Sign-in providers are configured after
+  install, through the instance-admin surface at `/god-mode`, and stored in the database.
+  That is why `plane-runtime` requires no identity provider and configures none — a
+  difference from `trueforge-runtime`, and a finding rather than an oversight.
+- **No declaration field distinguishes the two sources yet.** Today the distinction is
+  which of the two an organization actually set up. Recording it in the declaration is the
+  seam where it belongs, and it is not there.
 
 ---
 
@@ -513,7 +663,8 @@ authorization.
 | [ARCHITECTURE_PRINCIPLES.md](ARCHITECTURE_PRINCIPLES.md) | Why the model is shaped this way |
 | [Bootstrap `docs/CLI.md`](https://github.com/atbrydeud/ecosystem-bootstrap/blob/main/docs/CLI.md) | Every `bryde-connect` command in detail |
 | [Governance `docs/APPLYING_RULES.md`](https://github.com/atbrydeud/ecosystem-governance/blob/main/docs/APPLYING_RULES.md) | How a rule reaches the thing it governs |
-| [Blueprints `docs/MODULE_CONTRACT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/MODULE_CONTRACT.md) | What every module guarantees a caller |
+| [Blueprints `docs/MODULE_CONTRACT.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/MODULE_CONTRACT.md) | What every module — and every pattern — guarantees a caller |
+| [Blueprints `patterns/README.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/patterns/README.md) | What a pattern is, and which ones are deferred rather than forgotten |
 
 Nothing in this document grants authority. Where it and a policy differ, the policy wins
 and this document is the defect.
