@@ -59,9 +59,9 @@ refuses to run without a person. Learn it once.
 Blueprints has a CLI too — `bryde-deploy`, with `list`, `plan`, `apply`, `status` and
 `destroy` — and its `status` obeys the same no-network rule. Where it differs is that **it
 writes configuration and runs nothing**: no `tofu`, no `helm`, no cloud, at any point. A
-person reads what it wrote and applies it, from their own root module against their own
-cluster. Blueprints is also still a library of modules *and* patterns you can call directly
-from your own configuration.
+person reads what it wrote and applies it with `kubectl` and `helm` from the deployment
+directory it wrote, against their own cluster. Blueprints is also still a library of
+modules *and* patterns you can call directly from your own configuration.
 
 **Do not conclude that Governance and Blueprints share a toolchain.** They do not.
 Blueprints forbids the Terraform CLI in its own repository, and Governance's enforcement
@@ -186,11 +186,13 @@ before going further.
 - `gh`, authenticated as yourself. Bootstrap's CLI reads GitHub through it and never
   asks for a token of its own.
 - `node` and `npm` for the Bootstrap, Governance and Blueprints CLIs.
-- `tofu` (OpenTofu) for Bootstrap's fabric modules, and for applying what Blueprints
-  writes. **Not** the Terraform CLI — see the note in step 3.
+- `tofu` (OpenTofu) for Bootstrap's fabric modules, and for Blueprints' modules and
+  patterns called from your own root module. **Not** the Terraform CLI — see the note in
+  step 3.
 - `talosctl`, only on the self-managed cluster path in step 1, where a person runs the
   etcd bootstrap. A managed control plane does not need it.
-- `helm` and `kubectl` for the parts of a runtime that are a chart rather than a module.
+- `helm` and `kubectl` for the parts of a runtime that are a chart rather than a module,
+  and for applying what `bryde-deploy` writes.
 - A directory to hold your organization's checkouts, which is **not** inside
   `ecosystem-bootstrap`.
 
@@ -437,10 +439,12 @@ npx bryde-deploy apply --org <slug> --environment <env> --system trueforge-value
   --out ./deployments/<slug>/<env>
 ```
 
-`plan` prints the whole chain and marks any prerequisite Bootstrap has not met — the
-landing zone, the network, the cluster, the workload identity — naming that layer rather
-than pretending it is this one's to supply. `apply` writes the configuration for the
-systems you name into `--out`, and **you have to name one today.** With no `--system` it
+`plan` prints the whole chain. The landing zone, the network, the cluster and the workload
+identity appear in it as work that must already be done, each naming `ecosystem-bootstrap`
+as the layer that supplies it rather than pretending it is this one's — but nothing here
+contacts anything, so it cannot tell you whether they hold. What it does report as unmet is
+a declaration prerequisite Bootstrap has not recorded. `apply` writes the configuration for
+the systems you name into `--out`, and **you have to name one today.** With no `--system` it
 configures the default selection; that selection is empty on `main`, so a flag-less run
 refuses — exit `4`, nothing written — with `nothing can be configured for this organization
 yet`, because every runtime pattern there is present and not yet wired into a composition.
@@ -735,8 +739,9 @@ reference; Governance uses a credential without holding one; Blueprints accepts
 references as typed inputs and creates none.
 
 **Deploying from the Blueprints repository.** It applies nothing, and neither does its CLI:
-`bryde-deploy apply` writes configuration. If you are looking for where to run a real
-`apply`, it is your root module, against your cluster, under your authorization.
+`bryde-deploy apply` writes configuration. If you are looking for where a real `apply`
+happens, it is `helm upgrade --install` in the deployment directory the CLI wrote, or
+`tofu apply` in your own root module — against your cluster, under your authorization.
 
 **Looking for the cluster in Blueprints.** It is not there. The landing zone, the network,
 the identities, the substrate and the cluster are `ecosystem-bootstrap`'s, and Blueprints
