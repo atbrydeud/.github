@@ -43,7 +43,7 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 | Security, secrets, audit, data-boundary, RPO/RTO or retention requirement | `ecosystem-governance` |
 | Exception and change-control policy | `ecosystem-governance` |
 | The pattern a workload is deployed through — namespace, baseline, ingress | `ecosystem-blueprints` |
-| Postgres, Redis, storage, observability or backup/DR for a runtime | `ecosystem-blueprints` |
+| The data, cache or observability a runtime needs, running on the cluster | `ecosystem-blueprints` |
 | Argo CD/GitOps or CI runner deployment onto the cluster | `ecosystem-blueprints` |
 | Eve deployment | `ecosystem-blueprints` |
 | TrueForge deployment | `ecosystem-blueprints` |

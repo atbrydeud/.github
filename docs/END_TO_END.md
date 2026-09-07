@@ -188,6 +188,8 @@ before going further.
 - `node` and `npm` for the Bootstrap, Governance and Blueprints CLIs.
 - `tofu` (OpenTofu) for Bootstrap's fabric modules, and for applying what Blueprints
   writes. **Not** the Terraform CLI — see the note in step 3.
+- `talosctl`, only on the self-managed cluster path in step 1, where a person runs the
+  etcd bootstrap. A managed control plane does not need it.
 - `helm` and `kubectl` for the parts of a runtime that are a chart rather than a module.
 - A directory to hold your organization's checkouts, which is **not** inside
   `ecosystem-bootstrap`.
@@ -422,12 +424,18 @@ module — the one that holds your organization's values and your state backend 
 ```bash
 npx bryde-deploy list                       # what can be deployed at all. No organization, no network.
 npx bryde-deploy plan  --org <slug> --environment <env> --system <system>
-npx bryde-deploy apply --org <slug> --environment <env> --out ./deployments/<slug>/<env>
+npx bryde-deploy apply --org <slug> --environment <env> --system trueforge-values \
+  --out ./deployments/<slug>/<env>
 ```
 
 `plan` prints the whole chain and marks any prerequisite Bootstrap has not met — the
 landing zone, the network, the cluster, the workload identity — naming that layer rather
-than pretending it is this one's to supply. `apply` writes the configuration into `--out`.
+than pretending it is this one's to supply. `apply` writes the configuration for the
+systems you name into `--out`, and **you have to name one today.** With no `--system` it
+configures the default selection; that selection is empty on `main`, so a flag-less run
+refuses — exit `4`, nothing written — with `nothing can be configured for this organization
+yet`, because every runtime pattern there is present and not yet wired into a composition.
+`trueforge-values` and `trueforge-branding` are what this layer can write today.
 [`docs/RUNNING_DEPLOY.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/RUNNING_DEPLOY.md)
 covers every command, including `status` and `destroy`.
 
@@ -584,7 +592,7 @@ etcd bootstrap, belongs to Step 1 and is covered there.
 | 11 | Read the plan, get approval | RULE | **Human** | Review the PR |
 | 12 | Enforce | RULE | **Human** | `bryde-govern apply <org>` |
 | 13 | See what can be deployed, and what blocks it | DEPLOY | Human or agent | `bryde-deploy list` / `bryde-deploy plan` |
-| 14 | Write the deployment configuration | DEPLOY | Human or agent | `bryde-deploy apply` |
+| 14 | Write the deployment configuration for a system you name | DEPLOY | Human or agent | `bryde-deploy apply --system <system>` |
 | 15 | Establish the workload baseline | DEPLOY | Human or agent | `tofu apply` in the cluster root module |
 | 16 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` / `helm` in the cluster root module |
 
