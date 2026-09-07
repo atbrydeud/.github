@@ -35,6 +35,12 @@ consistent use of **CONNECT → RULE → DEPLOY → EQUIP → OPERATE**, and ali
 between the profile, ecosystem map, project map, support routing and templates.
 Review the full diff and open a scoped pull request with no runtime impact.
 
+The sibling `ecosystem-*` repositories are private, so an anonymous fetch of a
+`github.com/atbrydeud/...` link 404s even when the target exists. Verify those
+links, and any module, directory or CLI name claimed about another repository,
+with authenticated `gh api repos/atbrydeud/<repo>/contents/<path>` against
+`main` — never from memory or from a local clone, which may be stale.
+
 ## Maintaining this file
 
 Keep this file for knowledge useful to almost every future agent session in this project.

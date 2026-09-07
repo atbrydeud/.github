@@ -10,8 +10,9 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 | I need help with… | Go to |
 |---|---|
 | GitHub/cloud/SaaS accounts, identities, credential references or connections | [`ecosystem-bootstrap`](https://github.com/atbrydeud/ecosystem-bootstrap/issues) |
+| Landing zone, networking, the substrate or the Kubernetes cluster itself | [`ecosystem-bootstrap`](https://github.com/atbrydeud/ecosystem-bootstrap/issues) |
 | Policy, security requirements, authority, exceptions or break-glass | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance/issues) |
-| Infrastructure, databases, observability, GitOps or Eve/TrueForge/AGNTCY/n8n/Plane runtime deployment | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints/issues) |
+| Eve/TrueForge/AGNTCY/n8n/Plane runtime deployment onto a cluster, or the databases, observability and GitOps a runtime needs | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints/issues) |
 | Reusable agent, skill, MCP, tool, adapter or eval | [`ecosystem-library`](https://github.com/atbrydeud/ecosystem-library/issues) |
 | Plane configuration, SOP, n8n flow, approval or operating process | [`ecosystem-operations`](https://github.com/atbrydeud/ecosystem-operations/issues) |
 | Dashboard, registry, treasury/Web3 product or protocol integration | [`ecosystem-platform`](https://github.com/atbrydeud/ecosystem-platform/issues) |
