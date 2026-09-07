@@ -168,7 +168,7 @@ and both `/healthz` and the UI returned HTTP 200.
 | **No CONNECT, no RULE.** Nothing is declared and nothing is governed. | The deployment exists outside the record. No layer knows about it, no control applies to it, and nothing will notice when it drifts or when you forget it is there. | Steps 1 and 2: a declaration Blueprints reads, and enforcement applied to what was connected. |
 | **OIDC is off.** This is the chart's own default, not our choice. | The chart documents this default as a fixed local admin identity: **anyone who can reach the API or the UI is an administrator.** The port-forward is the only thing keeping that to you. Never expose this release. | Blueprints' rules for this chart never generate `enabled: false`; a declaration with no identity provider is refused, `clientSecret` is only ever a secret reference, and `server.publicBaseUrl` is always set. |
 | **Port-forward, no ingress, no TLS.** The chart ships no Ingress, Gateway or VirtualService at all. | The URL exists only while `kubectl port-forward` is running, on your machine only, over plain HTTP. Nobody else can reach it. | Blueprints generates an Ingress through the chart's `extraObjects` hook, which still needs an ingress controller running in the cluster. |
-| **Bundled Postgres and Redis with the chart's dev defaults.** | Postgres runs on a well-known password published in the chart's own values file, Redis runs with authentication disabled, and both live in the cluster, so the data lasts exactly as long as the cluster does. | An external managed Postgres and Redis over private endpoints, so data outlives the cluster. That path needs modules Blueprints has not built yet, so it is not deliverable today by either route. |
+| **Bundled Postgres and Redis with the chart's dev defaults.** | Postgres runs on a well-known password published in the chart's own values file, Redis runs with authentication disabled, and both live in the cluster, so the data lasts exactly as long as the cluster does. | An external managed Postgres and Redis over private endpoints, so data outlives the cluster. That path needs modules nobody has built yet, so it is not deliverable today by either route. |
 | **The stock image, unbranded.** | TrueForge's own colours. This is not a configuration you forgot to set: branding is applied when the interface is built, and there is no runtime path — no file, no endpoint, no environment variable. | Blueprints generates theme tokens for a branded UI build; someone then runs that build and the release points at the resulting image. |
 | **A throwaway local cluster, stood up by hand.** | Nothing here is reproducible from source. It exists on one laptop until `kind delete cluster`. | Step 1: a cluster stood up from Bootstrap's `modules/talos`, or its `modules/aks`, in a root module you own — then Step 3 deploys onto it. |
 
@@ -273,6 +273,7 @@ On the self-managed path the cluster's etcd bootstrap can be a step you run your
 human against the configuration the module wrote.
 
 ```bash
+tofu output -raw talosconfig > "${TALOSCONFIG:?}"
 talosctl bootstrap --nodes <first control-plane address>
 talosctl kubeconfig --nodes <first control-plane address> -
 ```
@@ -585,9 +586,9 @@ etcd bootstrap, belongs to Step 1 and is covered there.
 | 13 | See what can be deployed, and what blocks it | DEPLOY | Human or agent | `bryde-deploy list` / `bryde-deploy plan` |
 | 14 | Write the deployment configuration | DEPLOY | Human or agent | `bryde-deploy apply` |
 | 15 | Establish the workload baseline | DEPLOY | Human or agent | `tofu apply` in the cluster root module |
-| 16 | Deploy the runtimes | DEPLOY | **Human authorization** | `tofu apply` / `helm` in the cluster root module |
+| 16 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` / `helm` in the cluster root module |
 
-Steps 4, 5, 7, 8, 11, 12 and 16 need a person. That is deliberate in each case, and each
+Steps 4, 5, 7, 8, 11 and 12 need a person. That is deliberate in each case, and each
 layer documents why rather than leaving it implicit.
 
 **Steps 9 to 12 are the exception to the numbering.** They are the *first* pass through
@@ -642,9 +643,9 @@ supplies them is not.
 
 `trueforge-runtime` requires `secrets-from-vault`, so the governed TrueForge path is not
 deliverable today by either route — which is exactly what the
-[shortcut](#shortcut--a-running-trueforge-today) is honest about. The same is true of the
-`key-vault`, `postgres`, `redis`, `container-registry` and `observability` modules and of
-every runtime pattern in the graph except `plane-runtime`.
+[shortcut](#shortcut--a-running-trueforge-today) is honest about. The same is true of every
+runtime pattern in the graph except `plane-runtime`, and of every `kind: module` entry it
+still carries: not one of them has a directory behind it.
 
 ### Plane is the one thing with two valid sources
 

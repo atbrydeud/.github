@@ -49,11 +49,11 @@ relationships and ecosystem registration.
 
 It also owns the generic hosting fabric an organization is stood up on, as
 OpenTofu modules: the landing zone, networking, platform identities and
-workload identity federation, the substrate — a cloud provider's machines or
-local KVM — and the Kubernetes cluster on Talos, with a managed cluster offered
-as an alternative rather than a default. The vault is a declared provider in the
-same set; its module is the piece still to land. **Bootstrap gets you a
-cluster.**
+workload identity federation, the substrate — local KVM today, with a cloud
+provider's machines the piece still to land — and the Kubernetes cluster on
+Talos, with a managed cluster offered as an alternative rather than a default.
+The vault is a declared provider in the same set; its module is also still to
+land. **Bootstrap gets you a cluster.**
 
 Examples include GitHub and GitHub Apps, Azure/Entra, Slack, Plane, Attio, Xero,
 Supabase, Daytona, OpenRouter, 1Password structures and similar organizational
@@ -94,10 +94,10 @@ organization?**
 It owns what runs **on** a cluster Bootstrap already stood up: deployment of
 shared runtimes such as n8n, Eve, TrueForge, AGNTCY and Plane, and the reusable
 patterns a workload is deployed through — the workload baseline, ingress, and
-the Postgres, Redis, storage, observability, backup/DR and Argo CD/GitOps a
-runtime needs. **Blueprints puts things on the cluster.** It does not build one:
-the landing zone, networking, platform and workload identities, the substrate
-and the cluster itself belong to Bootstrap.
+the rest of what a runtime needs at or above the Kubernetes API. **Blueprints
+puts things on the cluster.** It does not build one: everything up to and
+including the cluster — the landing zone, networking, platform and workload
+identities, and the substrate — belongs to Bootstrap.
 
 It consumes the accounts, identities and credential references established by
 Bootstrap as typed inputs.
