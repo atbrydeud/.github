@@ -10,9 +10,9 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 
 | Ask | Repository |
 |---|---|
-| Am I establishing an **account, identity, credential reference or provider connection**? | Bootstrap |
+| Am I establishing an **account, identity, credential reference, provider connection or the fabric up to a running cluster**? | Bootstrap |
 | Am I changing what **must be true**? | Governance |
-| Am I defining a **deployable system, infrastructure module or runtime**? | Blueprints |
+| Am I defining a **deployable system, runtime or the pattern it lands on**? | Blueprints |
 | Am I creating a **reusable agent, skill, MCP or tool**? | Library |
 | Am I changing **how people and agents work**? | Operations |
 | Am I changing the **At Bryde Ud ecosystem/Web3 product**? | Platform |
@@ -32,14 +32,19 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 | OpenRouter account/API credential registration | `ecosystem-bootstrap` |
 | 1Password vault structure or secret-reference format | `ecosystem-bootstrap` |
 | OAuth application, OIDC federation or service-identity registration | `ecosystem-bootstrap` |
+| Landing zone, virtual network, subnets, private DNS or private endpoints | `ecosystem-bootstrap` |
+| The substrate an environment runs on — a cloud provider's machines, or local KVM | `ecosystem-bootstrap` |
+| The Kubernetes cluster itself, on Talos or a managed service | `ecosystem-bootstrap` |
+| Managed identity federated against the cluster for a workload to assume | `ecosystem-bootstrap` |
+| An OpenTofu module for any of the above | `ecosystem-bootstrap` |
 | AI authority or autonomy rule | `ecosystem-governance` |
 | Human approval or break-glass requirement | `ecosystem-governance` |
 | GitHub ruleset requirement | `ecosystem-governance` |
 | Security, secrets, audit, data-boundary, RPO/RTO or retention requirement | `ecosystem-governance` |
 | Exception and change-control policy | `ecosystem-governance` |
-| Azure/AKS, networking, OpenZiti or storage deployment | `ecosystem-blueprints` |
-| Postgres, Redis, observability or backup/DR infrastructure | `ecosystem-blueprints` |
-| Argo CD/GitOps or CI runner deployment | `ecosystem-blueprints` |
+| The pattern a workload is deployed through — namespace, baseline, ingress | `ecosystem-blueprints` |
+| Postgres, Redis, storage, observability or backup/DR for a runtime | `ecosystem-blueprints` |
+| Argo CD/GitOps or CI runner deployment onto the cluster | `ecosystem-blueprints` |
 | Eve deployment | `ecosystem-blueprints` |
 | TrueForge deployment | `ecosystem-blueprints` |
 | AGNTCY deployment | `ecosystem-blueprints` |
@@ -65,8 +70,10 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 ### Bootstrap vs Blueprints
 
 - Bootstrap establishes an Azure, Supabase or OpenRouter account/project,
-  identity, trust and credential reference.
-- Blueprints deploys infrastructure or a runtime using that established connection.
+  identity, trust and credential reference — and the fabric those records
+  describe, up to a running Kubernetes cluster.
+- Blueprints deploys a runtime onto that cluster, using those established
+  connections. **Bootstrap gets you a cluster; Blueprints puts things on it.**
 
 ### Blueprints vs Library
 

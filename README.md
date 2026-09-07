@@ -67,7 +67,7 @@ CONNECT → RULE → DEPLOY → EQUIP → OPERATE
 |---|---|---|
 | **CONNECT** | [`ecosystem-bootstrap`](https://github.com/atbrydeud/ecosystem-bootstrap) | Establishes accounts, identities, secrets architecture and service connections |
 | **RULE** | [`ecosystem-governance`](https://github.com/atbrydeud/ecosystem-governance) | Defines what must be true and who has authority |
-| **DEPLOY** | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints) | Deploys infrastructure, shared systems and agent runtimes |
+| **DEPLOY** | [`ecosystem-blueprints`](https://github.com/atbrydeud/ecosystem-blueprints) | Deploys shared systems and agent runtimes onto the cluster Bootstrap stood up |
 | **EQUIP** | [`ecosystem-library`](https://github.com/atbrydeud/ecosystem-library) | Supplies reusable agents, skills, MCPs, tools and components |
 | **OPERATE** | [`ecosystem-operations`](https://github.com/atbrydeud/ecosystem-operations) | Composes those capabilities into repeatable human and agent work |
 

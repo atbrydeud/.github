@@ -47,6 +47,14 @@ and workspaces, identities, service principals, OAuth/OIDC relationships,
 secret-store structures, credential references, provider projects, domains/DNS
 relationships and ecosystem registration.
 
+It also owns the generic hosting fabric an organization is stood up on, as
+OpenTofu modules: the landing zone, networking, platform identities and
+workload identity federation, the substrate — a cloud provider's machines or
+local KVM — and the Kubernetes cluster on Talos, with a managed cluster offered
+as an alternative rather than a default. The vault is a declared provider in the
+same set; its module is the piece still to land. **Bootstrap gets you a
+cluster.**
+
 Examples include GitHub and GitHub Apps, Azure/Entra, Slack, Plane, Attio, Xero,
 Supabase, Daytona, OpenRouter, 1Password structures and similar organizational
 providers. Provisioning may be `automated`, `assisted` or `manual`; legal,
@@ -83,13 +91,16 @@ included, operates within these requirements.
 **Question: What systems and runtime capabilities can be deployed into an
 organization?**
 
-It owns reusable infrastructure modules and deployment patterns: Azure/AKS,
-networking/OpenZiti, Postgres, Redis, storage, observability, backup/DR
-infrastructure, Argo CD/GitOps, CI runners, gateways and workload identity.
+It owns what runs **on** a cluster Bootstrap already stood up: deployment of
+shared runtimes such as n8n, Eve, TrueForge, AGNTCY and Plane, and the reusable
+patterns a workload is deployed through — the workload baseline, ingress, and
+the Postgres, Redis, storage, observability, backup/DR and Argo CD/GitOps a
+runtime needs. **Blueprints puts things on the cluster.** It does not build one:
+the landing zone, networking, platform and workload identities, the substrate
+and the cluster itself belong to Bootstrap.
 
-It also owns deployment of shared runtimes such as n8n, Eve, TrueForge,
-AGNTCY and Plane. It consumes the accounts, identities and credential
-references established by Bootstrap.
+It consumes the accounts, identities and credential references established by
+Bootstrap as typed inputs.
 
 ### 4. ecosystem-library — EQUIP
 
@@ -140,9 +151,9 @@ of them.
 
 | Repository | Owns | Does not own |
 |---|---|---|
-| Bootstrap | Accounts, identities, provider foundations, secret references and connections | General infrastructure/runtime deployments or reusable intelligence |
+| Bootstrap | Accounts, identities, provider foundations, secret references and connections, and the generic fabric up to a running cluster | Runtimes deployed onto that cluster, or reusable intelligence |
 | Governance | Policy, requirements, authority, controls, exceptions | Accounts, implementations, workflows or product code |
-| Blueprints | Deployable systems, infrastructure, runtimes and technical patterns | Accounts, agent/skill content, business workflows or mandates |
+| Blueprints | Deployable systems, runtimes and the technical patterns they land on | The cluster and the fabric under it, accounts, agent/skill content, business workflows or mandates |
 | Library | Reusable agents, skills, MCPs, tools, adapters and evals | Runtime deployment, org-specific process or policy |
 | Operations | SOPs, Plane config, n8n flows, approvals and human/agent process | Provider setup, runtime deployment or reusable component implementation |
 | Platform | At Bryde Ud ecosystem/Web3 product and protocol integrations | Infrastructure platform or canonical protocol definitions |
