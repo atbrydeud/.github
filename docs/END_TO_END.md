@@ -447,8 +447,9 @@ a declaration prerequisite Bootstrap has not recorded. `apply` writes the config
 the systems you name into `--out`, and **you have to name one today.** With no `--system` it
 configures the default selection; that selection is empty on `main`, so a flag-less run
 refuses — exit `4`, nothing written — with `nothing can be configured for this organization
-yet`, because every runtime pattern there is present and not yet wired into a composition.
-`trueforge-values` and `trueforge-branding` are what this layer can write today.
+yet`, because the only runtime pattern present there is not yet wired into a composition,
+and the rest are not built. `trueforge-values` and `trueforge-branding` are what this
+layer can write today.
 [`docs/RUNNING_DEPLOY.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/RUNNING_DEPLOY.md)
 covers every command, including `status` and `destroy`.
 
