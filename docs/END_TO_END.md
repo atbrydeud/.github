@@ -183,8 +183,9 @@ before going further.
 
 ## Before you start
 
-- `gh`, authenticated as yourself. Bootstrap's CLI reads GitHub through it and never
-  asks for a token of its own.
+- `gh`, authenticated as yourself. Bootstrap's and Blueprints' CLIs both read GitHub
+  through it — Blueprints reads the organization's declaration that way — and neither asks
+  for a token of its own.
 - `node` and `npm` for the Bootstrap, Governance and Blueprints CLIs.
 - `tofu` (OpenTofu) for Bootstrap's fabric modules, and for Blueprints' modules and
   patterns called from your own root module. **Not** the Terraform CLI — see the note in
@@ -452,15 +453,15 @@ npx bryde-deploy apply --org <slug> --environment <env> --system trueforge-value
 
 `plan` prints the whole chain. The landing zone, the network, the cluster and the workload
 identity appear in it as work that must already be done, each naming `ecosystem-bootstrap`
-as the layer that supplies it rather than pretending it is this one's — but nothing here
-contacts anything, so it cannot tell you whether they hold. What it does report as unmet is
-a declaration prerequisite Bootstrap has not recorded. `apply` writes the configuration for
-the systems you name into `--out`, and **you have to name one today.** With no `--system` it
-configures the default selection; that selection is empty on `main`, so a flag-less run
-refuses — exit `4`, nothing written — with `nothing can be configured for this organization
-yet`, because the only runtime pattern present there is not yet wired into a composition,
-and the rest are not built. `trueforge-values` and `trueforge-branding` are what this
-layer can write today.
+as the layer that supplies it rather than pretending it is this one's — but it contacts
+GitHub to read the declaration and nothing else, so it cannot tell you whether they hold.
+What it does report as unmet is a declaration prerequisite Bootstrap has not recorded.
+`apply` writes the configuration for the systems you name into `--out`, and **you have to
+name one today.** With no `--system` it configures the default selection; that selection is
+empty on `main`, so a flag-less run refuses — exit `4`, nothing written — with `nothing can
+be configured for this organization yet`, because the only runtime pattern present there is
+not yet wired into a composition, and the rest are not built. `trueforge-values` and
+`trueforge-branding` are what this layer can write today.
 [`docs/RUNNING_DEPLOY.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/docs/RUNNING_DEPLOY.md)
 covers every command, including `status` and `destroy`.
 
