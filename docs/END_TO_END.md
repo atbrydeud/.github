@@ -170,7 +170,7 @@ and both `/healthz` and the UI returned HTTP 200.
 | **Port-forward, no ingress, no TLS.** The chart ships no Ingress, Gateway or VirtualService at all. | The URL exists only while `kubectl port-forward` is running, on your machine only, over plain HTTP. Nobody else can reach it. | Blueprints generates an Ingress through the chart's `extraObjects` hook, which still needs an ingress controller running in the cluster. |
 | **Bundled Postgres and Redis with the chart's dev defaults.** | Postgres runs on a well-known password published in the chart's own values file, Redis runs with authentication disabled, and both live in the cluster, so the data lasts exactly as long as the cluster does. | An external managed Postgres and Redis over private endpoints, so data outlives the cluster. That path needs modules nobody has built yet, so it is not deliverable today by either route. |
 | **The stock image, unbranded.** | TrueForge's own colours. This is not a configuration you forgot to set: branding is applied when the interface is built, and there is no runtime path — no file, no endpoint, no environment variable. | Blueprints generates theme tokens for a branded UI build; someone then runs that build and the release points at the resulting image. |
-| **A throwaway local cluster, stood up by hand.** | Nothing here is reproducible from source. It exists on one laptop until `kind delete cluster`. | Step 1: a cluster stood up from Bootstrap's `modules/talos`, or its `modules/aks`, in a root module you own — then Step 3 deploys onto it. |
+| **A throwaway local cluster, stood up by hand.** | Nothing here is reproducible from source. It exists on one laptop until `kind delete cluster`. | Step 1: a cluster stood up from Bootstrap's `modules/talos` on `kvm-substrate`, or its `modules/aks` for a cloud one, in a root module you own — then Step 3 deploys onto it. The machines a Talos cluster needs on a cloud are the piece still to land. |
 
 The first three rows are the ones that decide when to stop using this path. **The moment
 anything reaches this release other than you through your own port-forward, it needs OIDC
@@ -258,10 +258,12 @@ describes, as OpenTofu modules under
 [`modules/`](https://github.com/atbrydeud/ecosystem-bootstrap/tree/main/modules):
 `landing-zone`, `networking` and `identity` for the environment an organization sits in,
 `kvm-substrate` for machines on the machine in front of you, and `talos` and `aks` for the
-cluster. `talos` is the one this layer leads with and it works on any substrate; `aks` is
-offered for an organization that wants a managed control plane, and is never the default.
-The vault belongs to this layer too, as a declared provider; its module is the piece still
-to land.
+cluster. `talos` is the one this layer leads with and it builds on any substrate, though
+`kvm-substrate` is the only substrate module here today — a cloud provider's machines are
+the piece still to land, so a Talos cluster on a cloud has nothing yet to make its machines.
+`aks` is offered for an organization that wants a managed control plane, is never the
+default, and is what delivers a cloud cluster today. The vault belongs to this layer too,
+as a declared provider; its module is the piece still to land.
 
 **Nothing connects the CLI to the modules yet.** `bryde-connect` writes and authorizes the
 declaration; the modules are applied separately, by a person, from a root module they own —
@@ -279,6 +281,12 @@ tofu output -raw talosconfig > "${TALOSCONFIG:?}"
 talosctl bootstrap --nodes <first control-plane address>
 talosctl kubeconfig --nodes <first control-plane address> -
 ```
+
+That branch stops OpenTofu short of the kubeconfig as well: `manage_bootstrap` is the same
+decision for both, so on it the module's `kubeconfig` and `kubernetes_client_configuration`
+outputs are null and the cluster connection is the file `talosctl` just wrote. Only
+`manage_bootstrap = true` hands that connection to the next layer as an output — which is
+the seam Step 3 picks up.
 
 [`docs/INFRASTRUCTURE.md`](https://github.com/atbrydeud/ecosystem-bootstrap/blob/main/docs/INFRASTRUCTURE.md)
 is what to read before working on any of these modules: the layout, the substrate boundary
@@ -466,7 +474,10 @@ what is here — so a workload rollback cannot plan a change to a virtual machin
 the state holding that virtual machine is not in this layer. Blueprints'
 [`examples/README.md`](https://github.com/atbrydeud/ecosystem-blueprints/blob/main/examples/README.md)
 documents that split: the input every example here leaves undefined is `kubernetes_cluster`,
-and what fills it is Bootstrap's `talos` module output `kubernetes_client_configuration`.
+and what fills it is Bootstrap's `talos` module output `kubernetes_client_configuration` —
+on the branch that produces it. That output is null unless `manage_bootstrap` is true, so a
+reader who ran the etcd bootstrap by hand in Step 1 is not handed it through OpenTofu at
+all, and configures this layer's providers from the kubeconfig `talosctl` wrote instead.
 
 `modules/agntcy/*` is the only thing under `modules/` here, and those modules install Helm
 charts and declare `kubernetes` and `helm`. By the definition above they are cluster-layer
@@ -507,6 +518,12 @@ module "baseline" {
 The value of `var.workload_identity_client_id` comes from the infrastructure layer's
 `client_ids` output, in
 [`ecosystem-bootstrap`'s `modules/identity`](https://github.com/atbrydeud/ecosystem-bootstrap/tree/main/modules/identity).
+**That federation reaches the managed cluster and not the portable one.** It needs a cluster
+service account token issuer URL, and only `modules/aks` publishes one; `modules/talos`
+exports no issuer, so on the substrate this layer leads with there is nothing to federate
+against yet. Bootstrap's
+[`docs/INFRASTRUCTURE.md`](https://github.com/atbrydeud/ecosystem-bootstrap/blob/main/docs/INFRASTRUCTURE.md)
+records that as unresolved rather than settled.
 
 You call it exactly the way you call a module — the same five files, the same contract, the
 same CI checks — and you run the same `tofu` commands below, in your cluster root module.
@@ -538,10 +555,11 @@ module "ingress" {
 
 Pin a version. Consumers pin releases rather than tracking `main`.
 
-What you pass is the cluster Bootstrap stood up — its API connection, the client ids of the
-identities federated against it — and credential *references*. That is the seam between the
-two layers: Bootstrap decides what exists, what its cluster is and where its secrets are;
-Blueprints consumes those as typed inputs and creates none of them.
+What you pass is the cluster Bootstrap stood up — its API connection, and on a managed
+cluster the client ids of the identities federated against it — and credential *references*.
+That is the seam between the two layers: Bootstrap decides what exists, what its cluster is
+and where its secrets are; Blueprints consumes those as typed inputs and creates none of
+them.
 
 ### 3b. Run it
 

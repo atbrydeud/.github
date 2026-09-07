@@ -11,13 +11,13 @@ contact_links:
     about: Canonical ownership model for the seven ecosystem repositories.
   - name: Bootstrap — CONNECT
     url: https://github.com/atbrydeud/ecosystem-bootstrap/issues
-    about: Accounts, providers, identities, credential references and service connections.
+    about: Accounts, providers, identities, credential references, service connections and the fabric up to a running cluster.
   - name: Governance — RULE
     url: https://github.com/atbrydeud/ecosystem-governance/issues
     about: Policy, security requirements, authority, audit, exceptions and change control.
   - name: Blueprints — DEPLOY
     url: https://github.com/atbrydeud/ecosystem-blueprints/issues
-    about: Infrastructure, systems and runtime deployments.
+    about: Systems and runtime deployments onto the cluster Bootstrap stood up.
   - name: Library — EQUIP
     url: https://github.com/atbrydeud/ecosystem-library/issues
     about: Reusable agents, skills, MCPs, tools, adapters and evals.
