@@ -284,7 +284,8 @@ talosctl kubeconfig --nodes <first control-plane address> -
 
 That branch stops OpenTofu short of the kubeconfig as well: `manage_bootstrap` is the same
 decision for both, so on it the module's `kubeconfig` and `kubernetes_client_configuration`
-outputs are null and the cluster connection is the file `talosctl` just wrote. Only
+outputs are null and the cluster connection is the kubeconfig `talosctl` prints — the
+trailing `-` sends it to stdout, so redirecting or merging it is yours to do. Only
 `manage_bootstrap = true` hands that connection to the next layer as an output — which is
 the seam Step 3 picks up.
 
@@ -477,7 +478,7 @@ documents that split: the input every example here leaves undefined is `kubernet
 and what fills it is Bootstrap's `talos` module output `kubernetes_client_configuration` —
 on the branch that produces it. That output is null unless `manage_bootstrap` is true, so a
 reader who ran the etcd bootstrap by hand in Step 1 is not handed it through OpenTofu at
-all, and configures this layer's providers from the kubeconfig `talosctl` wrote instead.
+all, and configures this layer's providers from the kubeconfig `talosctl` printed instead.
 
 `modules/agntcy/*` is the only thing under `modules/` here, and those modules install Helm
 charts and declare `kubernetes` and `helm`. By the definition above they are cluster-layer
