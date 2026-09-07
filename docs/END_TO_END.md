@@ -427,8 +427,8 @@ any substrate, or a managed one — is settled one layer down and is not a choic
 here.
 
 Blueprints is a library of reusable modules and patterns, plus a CLI that writes the
-configuration for them. **Nothing in it applies anything.** There is no `apply` in any of
-its workflows and no environment it could target, and `bryde-deploy apply` writes files
+configuration for them. **Nothing in it applies anything.** There is no `tofu apply` in any
+of its workflows and no environment it could target, and `bryde-deploy apply` writes files
 rather than changing anything. You consume the modules and patterns from your own root
 module — the one that holds your organization's values and your state backend — and you run
 `tofu` there.
