@@ -432,7 +432,15 @@ rather than changing anything. You consume the modules and patterns from your ow
 module — the one that holds your organization's values and your state backend — and you run
 `tofu` there.
 
+The CLI is not published: clone `ecosystem-blueprints` alongside your other checkouts and
+run it from there. That checkout is the install path rather than a convenience, because
+which systems are available is read from `modules/` and `patterns/` at the moment of the
+call; `--repository-root <path>` points a run started elsewhere at one.
+
 ```bash
+gh repo clone atbrydeud/ecosystem-blueprints
+cd ecosystem-blueprints && npm install      # builds through `prepare`
+
 npx bryde-deploy list                       # what can be deployed at all. No organization, no network.
 npx bryde-deploy plan  --org <slug> --environment <env> --system <system>
 npx bryde-deploy apply --org <slug> --environment <env> --system trueforge-values \
