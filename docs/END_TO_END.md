@@ -50,7 +50,7 @@ deployment happens inside it.**
 |---|---|---|---|
 | CONNECT | `ecosystem-bootstrap` | A CLI you run on a laptop: `bryde-connect`, plus `tofu` against its modules from your own root module | A declaration file — YAML describing the organization's accounts and credential *references* — and the fabric it describes, up to a running Kubernetes cluster |
 | RULE | `ecosystem-governance` | A CLI: `bryde-govern`. Rules are edited as YAML and applied by it | Requirements, and enforcement applied onto connected things |
-| DEPLOY | `ecosystem-blueprints` | A CLI: `bryde-deploy`. It writes the deployment configuration, which you then apply from your own root module with `tofu` or `helm` | Running runtimes, on a cluster CONNECT already stood up |
+| DEPLOY | `ecosystem-blueprints` | A CLI: `bryde-deploy`. It writes a deployment directory holding values and a runbook, which you apply with `helm` from that directory — no OpenTofu is written there. Its modules and patterns you call with `tofu` from your own root module | Running runtimes, on a cluster CONNECT already stood up |
 
 Bootstrap and Governance deliberately share a shape: `status` reads the record with no
 network and no credential, a second mode goes and looks, and the third changes things and
@@ -550,7 +550,8 @@ this stack that two different layers can legitimately supply.
 module "ingress" {
   source = "github.com/atbrydeud/ecosystem-blueprints//patterns/ingress-controller?ref=<version>"
   # this root module configures the kubernetes and helm providers from the cluster
-  # connection Bootstrap exported; the pattern declares none, and assumes no cloud
+  # connection Bootstrap exported; the pattern requires those two and configures
+  # neither, and declares no cloud provider at all
 }
 ```
 
@@ -613,7 +614,7 @@ etcd bootstrap, belongs to Step 1 and is covered there.
 | 13 | See what can be deployed, and what blocks it | DEPLOY | Human or agent | `bryde-deploy list` / `bryde-deploy plan` |
 | 14 | Write the deployment configuration for a system you name | DEPLOY | Human or agent | `bryde-deploy apply --system <system>` |
 | 15 | Establish the workload baseline | DEPLOY | Human or agent | `tofu apply` in the cluster root module |
-| 16 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` / `helm` in the cluster root module |
+| 16 | Deploy the runtimes | DEPLOY | Human or agent | `tofu apply` in the cluster root module, or `helm upgrade --install` from the generated deployment directory |
 
 Steps 4, 5, 7, 8, 11 and 12 need a person. That is deliberate in each case, and each
 layer documents why rather than leaving it implicit.
