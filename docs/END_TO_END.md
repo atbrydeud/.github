@@ -435,16 +435,19 @@ module — the one that holds your organization's values and your state backend 
 The CLI is not published: clone `ecosystem-blueprints` alongside your other checkouts and
 run it from there. That checkout is the install path rather than a convenience, because
 which systems are available is read from `modules/` and `patterns/` at the moment of the
-call; `--repository-root <path>` points a run started elsewhere at one.
+call; `--repository-root <path>` points a run started elsewhere at one. What it writes goes
+the other way — `--out` names your organization's own deployment repository, never this
+checkout, which ignores `deployments/` as a backstop against exactly that mistake.
 
 ```bash
+cd ~/where-your-organization-checkouts-live
 gh repo clone atbrydeud/ecosystem-blueprints
-cd ecosystem-blueprints && npm install      # builds through `prepare`
+cd ecosystem-blueprints && npm install      # builds through `prepare`. Run the CLI from here.
 
 npx bryde-deploy list                       # what can be deployed at all. No organization, no network.
 npx bryde-deploy plan  --org <slug> --environment <env> --system <system>
 npx bryde-deploy apply --org <slug> --environment <env> --system trueforge-values \
-  --out ./deployments/<slug>/<env>
+  --out ~/where-your-organization-checkouts-live/<slug>-deployments/<env>
 ```
 
 `plan` prints the whole chain. The landing zone, the network, the cluster and the workload
